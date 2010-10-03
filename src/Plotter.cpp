@@ -57,6 +57,13 @@ void Plotter::plotGrid(QPainter &p) {
       tick += yticks;
     }
 
+    tick = std::floor(ymin/descDistY)*descDistY;
+    // draw numbers
+    while(tick <= ymax) {
+      p.drawText(roundi(-xmin*xstep)-15, winheight-roundi((tick-ymin)*ystep)+5, QString::number(tick, 'g', 2));
+      tick += descDistY;
+    }
+
     // draw axis
     p.drawLine(roundi(-xmin*xstep), 0, roundi(-xmin*xstep), winheight);
   }
@@ -70,6 +77,15 @@ void Plotter::plotGrid(QPainter &p) {
       p.drawLine(roundi((tick-xmin)*xstep), winheight-roundi(-ymin*ystep)+3, roundi((tick-xmin)*xstep), winheight-roundi(-ymin*ystep)-3);
       tick += xticks;
     }
+
+    tick = std::floor(xmin/descDistX)*descDistX;
+    // draw numbers
+    while(tick <= xmax) {
+      p.drawText(roundi((tick-xmin)*xstep)-7, winheight-roundi(-ymin*ystep)+20, QString::number(tick, 'g', 2));
+      tick += descDistX;
+    }
+
+    // draw axis
     p.drawLine(0, winheight-roundi(-ymin*ystep), winwidth, winheight-roundi(-ymin*ystep));
   }
 }
@@ -90,6 +106,19 @@ void Plotter::computeCSParameters() {
     yticks = round(yticks*2)/2;
     emit newYTicks(yticks);
   }
+
+  // compute distances between numbers labels on axes
+  descDistX = (xmax-xmin)*((double)descAutoPixelDist)/winwidth;
+  if(xticks>descDistX)
+    descDistX = xticks;
+  else
+    descDistX = std::ceil(descDistX/xticks)*xticks;
+
+  descDistY = (ymax-ymin)*((double)descAutoPixelDist)/winheight;
+  if(yticks>descDistY)
+    descDistY = yticks;
+  else
+    descDistY = std::ceil(descDistY/yticks)*yticks;
 }
 
 void Plotter::setCenter(double x, double y) {

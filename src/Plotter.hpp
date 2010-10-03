@@ -32,6 +32,7 @@ private:
   int winwidth, winheight;
 
   static const int tickPixelDistForAuto = 20;
+  static const int descAutoPixelDist = 100;
   static const double zoomFactor = 1.2;
 
   // compute x- and y-ticks automatically
@@ -40,8 +41,10 @@ private:
   // for mouse movement of the graph
   bool leftPressed;
 
-  // tick-lenght
+  // tick-lenght for axis ticks
   double xticks, yticks;
+  // distance between number label on axes
+  double descDistX, descDistY;
 
   // pixels per unit
   double xstep, ystep;
