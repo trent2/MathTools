@@ -2,14 +2,16 @@ include(${QT_USE_FILE})
 set(MathTools_SRCS
   MathTools.cpp
   main.cpp
+  Plotter.cpp
 )
 
 set(MathTools_MOC_HDRS
-  MathTools.h
+  MathTools.hpp
+  Plotter.hpp
 )
 
 set(MathTools_UIS
-  mathtools_ui.ui
+  mathtools.ui
 )
 
 qt4_wrap_ui(MathTools_UIS_H ${MathTools_UIS})

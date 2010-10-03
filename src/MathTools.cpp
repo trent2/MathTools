@@ -1,19 +1,10 @@
-#include "MathTools.h"
+#include <QtGui/QMainWindow>
 
-#include <QtGui/QLabel>
-#include <QtGui/QMenu>
-#include <QtGui/QMenuBar>
-#include <QtGui/QAction>
+#include "MathTools.hpp"
 
-MathTools::MathTools()
+MathTools::MathTools(QWidget * parent, Qt::WFlags f) : QMainWindow(parent, f)
 {
-    QLabel* l = new QLabel( this );
-    l->setText( "Hello World!" );
-    setCentralWidget( l );
-    QAction* a = new QAction(this);
-    a->setText( "Quit" );
-    connect(a, SIGNAL(triggered()), SLOT(close()) );
-    menuBar()->addMenu( "File" )->addAction( a );
+  setupUi(this);
 }
 
 MathTools::~MathTools()
