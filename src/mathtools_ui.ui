@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MathTools</class>
+ <widget class="QMainWindow" name="MathTools">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>711</width>
+    <height>600</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <item>
+     <widget class="QTabWidget" name="mainTabWidget">
+      <property name="currentIndex">
+       <number>0</number>
+      </property>
+      <widget class="QWidget" name="plotFunctionTab">
+       <attribute name="title">
+        <string>Plot Function</string>
+       </attribute>
+       <layout class="QGridLayout" name="gridLayout">
+        <item row="0" column="0">
+         <widget class="QGroupBox" name="functionsBox">
+          <property name="minimumSize">
+           <size>
+            <width>321</width>
+            <height>200</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>321</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <property name="title">
+           <string>Functions</string>
+          </property>
+          <widget class="QLineEdit" name="f1LineEdit">
+           <property name="geometry">
+            <rect>
+             <x>55</x>
+             <y>26</y>
+             <width>110</width>
+             <height>25</height>
+            </rect>
+           </property>
+          </widget>
+          <widget class="QLabel" name="f1Label">
+           <property name="geometry">
+            <rect>
+             <x>11</x>
+             <y>26</y>
+             <width>38</width>
+             <height>16</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>f1(x)=</string>
+           </property>
+          </widget>
+          <widget class="QLineEdit" name="f2LineEdit">
+           <property name="geometry">
+            <rect>
+             <x>55</x>
+             <y>57</y>
+             <width>110</width>
+             <height>25</height>
+            </rect>
+           </property>
+          </widget>
+          <widget class="QLabel" name="f2Label">
+           <property name="geometry">
+            <rect>
+             <x>11</x>
+             <y>57</y>
+             <width>38</width>
+             <height>16</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>f2(x)=</string>
+           </property>
+          </widget>
+          <widget class="QLineEdit" name="f3LineEdit">
+           <property name="geometry">
+            <rect>
+             <x>55</x>
+             <y>88</y>
+             <width>110</width>
+             <height>25</height>
+            </rect>
+           </property>
+          </widget>
+          <widget class="QLabel" name="f3Label">
+           <property name="geometry">
+            <rect>
+             <x>11</x>
+             <y>88</y>
+             <width>38</width>
+             <height>16</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>f3(x)=</string>
+           </property>
+          </widget>
+          <widget class="QLineEdit" name="f4LineEdit">
+           <property name="geometry">
+            <rect>
+             <x>55</x>
+             <y>119</y>
+             <width>110</width>
+             <height>25</height>
+            </rect>
+           </property>
+          </widget>
+          <widget class="QLabel" name="f4Label">
+           <property name="geometry">
+            <rect>
+             <x>11</x>
+             <y>119</y>
+             <width>38</width>
+             <height>16</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>f4(x)=</string>
+           </property>
+          </widget>
+         </widget>
+        </item>
+        <item row="0" column="1" rowspan="2">
+         <widget class="QFrame" name="frame">
+          <property name="minimumSize">
+           <size>
+            <width>281</width>
+            <height>311</height>
+           </size>
+          </property>
+          <property name="frameShape">
+           <enum>QFrame::StyledPanel</enum>
+          </property>
+          <property name="frameShadow">
+           <enum>QFrame::Raised</enum>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QGroupBox" name="groupBox">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>321</width>
+            <height>171</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>321</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <property name="title">
+           <string>Control</string>
+          </property>
+          <widget class="QPushButton" name="plotPushButton">
+           <property name="geometry">
+            <rect>
+             <x>10</x>
+             <y>140</y>
+             <width>83</width>
+             <height>26</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>Plot</string>
+           </property>
+          </widget>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>711</width>
+     <height>23</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
