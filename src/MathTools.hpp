@@ -1,14 +1,17 @@
-#ifndef MathTools_H
-#define MathTools_H
+#ifndef __MATHTOOLS_HPP_
+#define __MATHTOOLS_HPP_
 
-#include <QtGui/QMainWindow>
+#include "ui_mathtools.h"
 
-class MathTools : public QMainWindow
+class QMainWindow;
+
+class MathTools : public QMainWindow, public Ui::MathTools
 {
 Q_OBJECT
 public:
-    MathTools();
-    virtual ~MathTools();
+  MathTools(QWidget * parent = 0, Qt::WFlags f = Qt::Window);
+
+  virtual ~MathTools();
 };
 
-#endif // MathTools_H
+#endif // __MATHTOOLS_HPP_
