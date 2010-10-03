@@ -1,6 +1,6 @@
 #include <QtGui/QApplication>
-#include "MathTools.h"
 
+#include "MathTools.hpp"
 
 int main(int argc, char** argv)
 {
