@@ -75,6 +75,8 @@ public slots:
   void autoXTicks(bool);
   void autoYTicks(bool);
 
+  void setF1(const QString);
+
 signals:
   void newXMin(double);
   void newXMax(double);

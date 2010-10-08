@@ -1,6 +1,7 @@
 include(${QT_USE_FILE})
 set(MathTools_SRCS
   MathTools.cpp
+  MathFunction.cpp
   main.cpp
   Plotter.cpp
 )

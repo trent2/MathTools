@@ -1,5 +1,5 @@
 #include <vector>
-#include <algorithm>
+#include <cmath>
 
 #include <QtGui/QFrame>
 #include <QtGui/QPaintEvent>
@@ -15,7 +15,7 @@ Plotter::Plotter(QWidget *parent) : QFrame(parent),
 				    compAutoXTicks(false), compAutoYTicks(false),
 				    leftPressed(false) {
   // test code: generate a test function
-  mfunc.push_back(MathFunction());
+  mfunc.push_back(MathFunction(""));
 }
 
 Plotter::~Plotter() {
@@ -23,6 +23,9 @@ Plotter::~Plotter() {
 }
 
 void Plotter::paintEvent(QPaintEvent *) {
+  bool nextIsMove = true;
+  double y;
+
   computeCSParameters();
 
   QPainterPath pathstroke;
@@ -35,11 +38,23 @@ void Plotter::paintEvent(QPaintEvent *) {
 
   p.setPen(QPen(Qt::red, 2));
 
-  MathFunction *fct = & mfunc[0];
 
-  pathstroke.moveTo(0, winheight-(fct->eval(-xmin)-ymin)*ystep);
-  for(int x=1; x<=winwidth; ++x)
-    pathstroke.lineTo(x, winheight-roundi((fct->eval(x/xstep+xmin)-ymin)*ystep));
+  // draw functions
+  if(mfunc[0].can_eval()) {  // function term is parsable hence evaluable
+    for(int x=0; x<=winwidth; ++x) {
+      y = mfunc[0].eval(xmin);
+
+      if(std::isnan(y))
+	nextIsMove = true;
+      else
+	if(nextIsMove) {
+	  pathstroke.moveTo(x, winheight-roundi((mfunc[0].eval(xmin+x/xstep)-ymin)*ystep));
+	  nextIsMove = false;
+	} else {
+	  pathstroke.lineTo(x, winheight-roundi((mfunc[0].eval(xmin+x/xstep)-ymin)*ystep));
+	}
+    }
+  }
 
   p.drawPath(pathstroke);
 }
@@ -158,10 +173,10 @@ void Plotter::zoomToCenter(int wx, int wy, double f) {
   ymin += th;
   ymax -= th;
 
+  // shift (x,y) back
   tw = winwidth/(xmax-xmin);
   th = winheight/(ymax-ymin);
 
-  // shift (x,y) back
   xmin -= dw/tw;
   xmax -= dw/tw;
   ymin -= dh/th;
@@ -197,6 +212,11 @@ void Plotter::mouseMoveEvent(QMouseEvent *e) {
 }
 
 /** Slots **/
+
+void Plotter::setF1(const QString s) {
+  mfunc[0].setFunction(s.toStdString());
+  update();
+}
 
 void Plotter::setXMin(double xmin) {
   this->xmin = xmin;

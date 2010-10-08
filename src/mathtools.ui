@@ -60,9 +60,6 @@
              </property>
             </widget>
            </item>
-           <item row="0" column="1">
-            <widget class="QLineEdit" name="f1LineEdit"/>
-           </item>
            <item row="1" column="0">
             <widget class="QLabel" name="f2Label">
              <property name="text">
@@ -93,6 +90,9 @@
            <item row="3" column="1">
             <widget class="QLineEdit" name="f4LineEdit"/>
            </item>
+           <item row="0" column="1">
+            <widget class="QLineEdit" name="f1LineEdit"/>
+           </item>
           </layout>
          </widget>
         </item>
@@ -116,6 +116,7 @@
           <property name="frameShadow">
            <enum>QFrame::Raised</enum>
           </property>
+          <zorder>f1LineEdit</zorder>
          </widget>
         </item>
         <item row="1" column="0">
@@ -251,21 +252,27 @@
             </layout>
            </item>
            <item row="0" column="1">
-            <layout class="QVBoxLayout" name="tickVBox">
-             <item>
+            <layout class="QFormLayout" name="formLayout_2">
+             <item row="0" column="0">
               <widget class="QLabel" name="xticksLabel">
+               <property name="minimumSize">
+                <size>
+                 <width>0</width>
+                 <height>15</height>
+                </size>
+               </property>
                <property name="text">
                 <string>x-Ticks</string>
                </property>
               </widget>
              </item>
-             <item>
+             <item row="0" column="1">
               <widget class="QDoubleSpinBox" name="xticksDSpinBox">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
+               <property name="minimumSize">
+                <size>
+                 <width>0</width>
+                 <height>25</height>
+                </size>
                </property>
                <property name="maximum">
                 <double>100000.000000000000000</double>
@@ -275,27 +282,33 @@
                </property>
               </widget>
              </item>
-             <item>
+             <item row="1" column="0" colspan="2">
               <widget class="QCheckBox" name="xAutoCheckBox">
+               <property name="minimumSize">
+                <size>
+                 <width>0</width>
+                 <height>21</height>
+                </size>
+               </property>
                <property name="text">
                 <string>auto</string>
                </property>
               </widget>
              </item>
-             <item>
+             <item row="2" column="0">
               <widget class="QLabel" name="yticksLabel">
                <property name="text">
                 <string>y-Ticks</string>
                </property>
               </widget>
              </item>
-             <item>
+             <item row="2" column="1">
               <widget class="QDoubleSpinBox" name="yticksDSpinBox">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
+               <property name="minimumSize">
+                <size>
+                 <width>0</width>
+                 <height>25</height>
+                </size>
                </property>
                <property name="maximum">
                 <double>100000.000000000000000</double>
@@ -305,8 +318,14 @@
                </property>
               </widget>
              </item>
-             <item>
+             <item row="3" column="0" colspan="2">
               <widget class="QCheckBox" name="yAutoCheckBox">
+               <property name="minimumSize">
+                <size>
+                 <width>0</width>
+                 <height>21</height>
+                </size>
+               </property>
                <property name="text">
                 <string>auto</string>
                </property>
@@ -363,6 +382,7 @@
     <slot>setYTicks(double)</slot>
     <slot>autoXTicks(bool)</slot>
     <slot>autoYTicks(bool)</slot>
+    <slot>setF1(QString)</slot>
    </slots>
   </customwidget>
  </customwidgets>
@@ -376,7 +396,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>241</x>
-     <y>378</y>
+     <y>391</y>
     </hint>
     <hint type="destinationlabel">
      <x>242</x>
@@ -392,7 +412,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>149</x>
-     <y>338</y>
+     <y>372</y>
     </hint>
     <hint type="destinationlabel">
      <x>513</x>
@@ -408,7 +428,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>116</x>
-     <y>369</y>
+     <y>403</y>
     </hint>
     <hint type="destinationlabel">
      <x>519</x>
@@ -424,7 +444,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>117</x>
-     <y>398</y>
+     <y>432</y>
     </hint>
     <hint type="destinationlabel">
      <x>465</x>
@@ -440,7 +460,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>104</x>
-     <y>427</y>
+     <y>461</y>
     </hint>
     <hint type="destinationlabel">
      <x>403</x>
@@ -455,8 +475,8 @@
    <slot>setXTicks(double)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>309</x>
-     <y>356</y>
+     <x>328</x>
+     <y>369</y>
     </hint>
     <hint type="destinationlabel">
      <x>420</x>
@@ -475,8 +495,8 @@
      <y>464</y>
     </hint>
     <hint type="destinationlabel">
-     <x>210</x>
-     <y>440</y>
+     <x>257</x>
+     <y>432</y>
     </hint>
    </hints>
   </connection>
@@ -492,7 +512,7 @@
     </hint>
     <hint type="destinationlabel">
      <x>85</x>
-     <y>339</y>
+     <y>373</y>
     </hint>
    </hints>
   </connection>
@@ -508,7 +528,7 @@
     </hint>
     <hint type="destinationlabel">
      <x>134</x>
-     <y>361</y>
+     <y>395</y>
     </hint>
    </hints>
   </connection>
@@ -524,7 +544,7 @@
     </hint>
     <hint type="destinationlabel">
      <x>103</x>
-     <y>396</y>
+     <y>430</y>
     </hint>
    </hints>
   </connection>
@@ -540,7 +560,7 @@
     </hint>
     <hint type="destinationlabel">
      <x>81</x>
-     <y>433</y>
+     <y>467</y>
     </hint>
    </hints>
   </connection>
@@ -555,8 +575,8 @@
      <y>382</y>
     </hint>
     <hint type="destinationlabel">
-     <x>289</x>
-     <y>352</y>
+     <x>328</x>
+     <y>365</y>
     </hint>
    </hints>
   </connection>
@@ -600,7 +620,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>303</x>
-     <y>467</y>
+     <y>459</y>
     </hint>
     <hint type="destinationlabel">
      <x>537</x>
@@ -621,6 +641,22 @@
     <hint type="destinationlabel">
      <x>589</x>
      <y>250</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>f1LineEdit</sender>
+   <signal>textEdited(QString)</signal>
+   <receiver>plotter</receiver>
+   <slot>setF1(QString)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>300</x>
+     <y>98</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>478</x>
+     <y>106</y>
     </hint>
    </hints>
   </connection>
