@@ -1,0 +1,1 @@
+#include "qtcolorcombobox/qtcolorcombobox.hpp"

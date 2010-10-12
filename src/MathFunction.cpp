@@ -1,13 +1,28 @@
 #include "MathFunction.hpp"
 #include "parser.hpp"
 
-MathFunction::MathFunction(const std::string &s) : func_string(s) {
+MathFunction::MathFunction(const QColor &col) : func_string(""), f(0), parser(new parser::unary_function_parser), color(col) { }
+
+MathFunction::MathFunction(const std::string &s, const QColor &col) : func_string(s), f(0),
+								      parser(new parser::unary_function_parser), color(col) {
+  parse();
 }
 
-bool MathFunction::can_eval() const {
-  return parser::arith_parser.valid(func_string);
+MathFunction::~MathFunction() {
+  delete f;
 }
 
-double MathFunction::eval(const double &d) const {
-  return parser::arith_parser.eval(d, func_string);
+bool MathFunction::parse() {
+  bool r = parser->parse(func_string);
+
+  if(r) {
+    // delete old f
+    delete f;
+    f = parser->getFunction();
+  }
+  return r;
+}
+
+double MathFunction::operator()(const double &d) const {
+  return (*f)(d);
 }

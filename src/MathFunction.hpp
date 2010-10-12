@@ -2,24 +2,42 @@
 #define __MATH_FUNCTION_HPP__
 
 #include <string>
+#include <QColor>
+
+#include "parser_functor.hpp"
+
+namespace parser {
+  struct unary_function_parser;
+}
 
 class MathFunction {
-
 public:
-  MathFunction() : func_string("0") { }
-  MathFunction(const std::string &);
+  MathFunction(const QColor &col = Qt::red);
+  MathFunction(const std::string &s, const QColor &col = Qt::red);
 
-  ~MathFunction() { }
+  ~MathFunction();
 
   void setFunction(const std::string &s) {
     func_string = s;
   }
 
-  bool can_eval() const;
+  void setColor(const QColor &col) {
+    color = col;
+  }
 
-  double eval(const double &) const;
+  const QColor& getColor() const {
+    return color;
+  }
+
+
+  bool parse();
+
+  double operator()(const double &) const;
 
 private:
   std::string func_string;
+  parser::un_fun *f;
+  parser::unary_function_parser *parser;
+  QColor color;
 };
 #endif

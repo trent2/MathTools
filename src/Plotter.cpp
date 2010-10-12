@@ -15,20 +15,31 @@ Plotter::Plotter(QWidget *parent) : QFrame(parent),
 				    compAutoXTicks(false), compAutoYTicks(false),
 				    leftPressed(false) {
   // test code: generate a test function
-  mfunc.push_back(MathFunction(""));
+  
+  mfunc.push_back(std::string(""));
+  mfunc.push_back(std::string(""));
+  mfunc.push_back(std::string(""));
+  mfunc.push_back(std::string(""));
 }
 
 Plotter::~Plotter() {
   mfunc.clear();
 }
 
+void Plotter::update() {
+  QWidget::update();
+}
+
+MathFunction& Plotter::getFunction(int index) {
+  return mfunc[index];
+}
+
 void Plotter::paintEvent(QPaintEvent *) {
-  bool nextIsMove = true;
+  bool nextIsMove;
   double y;
 
   computeCSParameters();
 
-  QPainterPath pathstroke;
   QPainter p(this);
 
   //  p.setRenderHint(QPainter::Antialiasing);
@@ -36,27 +47,29 @@ void Plotter::paintEvent(QPaintEvent *) {
   p.setPen(QPen(Qt::black, 1));
   plotGrid(p);
 
-  p.setPen(QPen(Qt::red, 2));
-
-
   // draw functions
-  if(mfunc[0].can_eval()) {  // function term is parsable hence evaluable
-    for(int x=0; x<=winwidth; ++x) {
-      y = mfunc[0].eval(xmin);
+  for(int i=0; i<4; ++i)
+    if(mfunc[i].parse()) {  // function term is parsable hence evaluable
+      QPainterPath pathstroke;
+      nextIsMove = true;
 
-      if(std::isnan(y))
-	nextIsMove = true;
-      else
-	if(nextIsMove) {
-	  pathstroke.moveTo(x, winheight-roundi((mfunc[0].eval(xmin+x/xstep)-ymin)*ystep));
-	  nextIsMove = false;
-	} else {
-	  pathstroke.lineTo(x, winheight-roundi((mfunc[0].eval(xmin+x/xstep)-ymin)*ystep));
-	}
+      p.setPen(QPen(mfunc[i].getColor(), 2));
+
+      for(int x=0; x<=winwidth; ++x) {
+	y = mfunc[i](xmin+x/xstep);
+	
+	if(std::isnan(y))
+	  nextIsMove = true;
+	else
+	  if(nextIsMove) {
+	    pathstroke.moveTo(x, winheight-roundi((y-ymin)*ystep));
+	    nextIsMove = false;
+	  } else {
+	    pathstroke.lineTo(x, winheight-roundi((y-ymin)*ystep));
+	  }
+      }
+      p.drawPath(pathstroke);
     }
-  }
-
-  p.drawPath(pathstroke);
 }
 
 void Plotter::plotGrid(QPainter &p) {
@@ -152,6 +165,18 @@ void Plotter::setCenter(double x, double y) {
   emit newYMax(ymax);
 }
 
+void Plotter::resizeAxes(double dx, double dy) {
+  xmin = old_vals.xmin+dx/2;
+  xmax = old_vals.xmax-dx/2;
+  ymin = old_vals.ymin+dy/2;
+  ymax = old_vals.ymax-dy/2;
+
+  emit newXMin(xmin);
+  emit newXMax(xmax);
+  emit newYMin(ymin);
+  emit newYMax(ymax);
+}
+
 void Plotter::zoomToCenter(int wx, int wy, double f) {
   int dw = wx-winwidth/2;
   double tw = xstep;
@@ -194,47 +219,74 @@ void Plotter::wheelEvent(QWheelEvent *e) {
 
 void Plotter::mousePressEvent(QMouseEvent *e) {
   leftPressed = false;
+  key_mod = e->modifiers();
+
   if(e->button() == Qt::LeftButton) {
     leftPressed = true;
-    anchorMX = (xmax+xmin)/2;
-    anchorMY = (ymax+ymin)/2;
-    anchorWX = e->x();
-    anchorWY = e->y();
-    //    setCenter(e->x()/xstep + xmin, (winheight-e->y())/ystep + ymin);
+    old_vals.anchorMX = (xmax+xmin)/2;
+    old_vals.anchorMY = (ymax+ymin)/2;
+    old_vals.anchorWX = e->x();
+    old_vals.anchorWY = e->y();
+
+    if(key_mod == Qt::ShiftModifier) {
+      old_vals.xmin = xmin;
+      old_vals.xmax = xmax;
+      old_vals.ymin = ymin;
+      old_vals.ymax = ymax;
+    }
   }
 }
 
 void Plotter::mouseMoveEvent(QMouseEvent *e) {
-  int dx = e->x() - anchorWX, dy = anchorWY - e->y();
+  int dx = e->x() - old_vals.anchorWX, dy = old_vals.anchorWY - e->y();
 
   if(leftPressed)
-    setCenter(anchorMX - dx/xstep, anchorMY - dy/ystep);
+    switch(key_mod) {
+    case Qt::NoModifier    : setCenter(old_vals.anchorMX - dx/xstep, old_vals.anchorMY - dy/ystep); break;
+    case Qt::ShiftModifier : resizeAxes(dx/xstep, dy/ystep);break;
+    default: break;
+    }
 }
 
 /** Slots **/
 
-void Plotter::setF1(const QString s) {
-  mfunc[0].setFunction(s.toStdString());
-  update();
-}
-
 void Plotter::setXMin(double xmin) {
   this->xmin = xmin;
+  if(xmax<xmin) {
+    xmax = xmin+.5;
+    emit newXMax(xmax);
+  }
+  emit newXMin(xmin);
   update();
 }
 
 void Plotter::setXMax(double xmax) {
   this->xmax = xmax;
+  if(xmax<xmin) {
+    xmin = xmax-.5;
+    emit newXMin(xmin);
+  }
+  emit newXMax(xmax);
   update();
 }
 
 void Plotter::setYMin(double ymin) {
   this->ymin = ymin;
+  if(ymax<ymin) {
+    ymax = ymin+.5;
+    emit newYMax(ymax);
+  }
+  emit newYMin(ymin);
   update();
 }
 
 void Plotter::setYMax(double ymax) {
   this->ymax = ymax;
+  if(ymax<ymin) {
+    ymin = ymax-.5;
+    emit newYMin(ymin);
+  }
+  emit newYMax(ymax);
   update();
 }
 
@@ -256,4 +308,15 @@ void Plotter::autoXTicks(bool b) {
 void Plotter::autoYTicks(bool b) {
   compAutoYTicks = b;
   update();
+}
+
+void Plotter::setStandardWindow() {
+  xmin = -10;
+  xmax = 10;
+  ymin = -10;
+  ymax = 10;
+  emit newXMin(xmin);
+  emit newXMax(xmax);
+  emit newYMin(ymin);
+  emit newYMax(ymax);
 }

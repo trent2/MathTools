@@ -19,6 +19,9 @@ public:
   Plotter(QWidget *parent=0);
   ~Plotter();
 
+  void update();
+  MathFunction& getFunction(int index);
+
 protected:  // all these methods are overwritten
   void paintEvent(QPaintEvent *);
   void mouseMoveEvent(QMouseEvent *);
@@ -40,6 +43,8 @@ private:
 
   // for mouse movement of the graph
   bool leftPressed;
+  // modifiers hit when mouse was pressed
+  unsigned int key_mod;
 
   // tick-lenght for axis ticks
   double xticks, yticks;
@@ -49,9 +54,16 @@ private:
   // pixels per unit
   double xstep, ystep;
 
-  // position of mouse move start
-  int anchorWX, anchorWY;
-  double anchorMX, anchorMY;
+
+  // old values for tracking resize and move operations
+  struct old_vals_t {
+    double xmin, xmax, ymin, ymax;
+    // mean(xmax,xmin), mean(ymax,ymin)
+    double anchorMX, anchorMY;
+    // position of mouse move start (in pixel coords)
+    int anchorWX, anchorWY;
+  } old_vals;
+
 
   std::vector<MathFunction> mfunc;
 
@@ -61,8 +73,11 @@ private:
   // set (x,y) as the center of the cs
   void setCenter(double x, double y);
 
-  // factor>1 indicates to zoom in, factor<1 zooms out
-  void zoomToCenter(int wx, int wy, double f);
+  // change axes size by dx, dy
+  void resizeAxes(double dx, double dy);
+
+  // f>1 indicates to zoom in, f<1 zooms out
+  void zoomToCenter(int, int, double f);
 
 public slots:
   void setXMin(double xmin);
@@ -75,8 +90,7 @@ public slots:
   void autoXTicks(bool);
   void autoYTicks(bool);
 
-  void setF1(const QString);
-
+  void setStandardWindow();
 signals:
   void newXMin(double);
   void newXMax(double);
