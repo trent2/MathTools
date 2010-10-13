@@ -29,10 +29,11 @@ public:
     return color;
   }
 
-
   bool parse();
 
   double operator()(const double &) const;
+
+  void setUStepsize(const double &d);
 
 private:
   std::string func_string;
@@ -40,4 +41,5 @@ private:
   parser::unary_function_parser *parser;
   QColor color;
 };
+
 #endif

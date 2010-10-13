@@ -1,10 +1,12 @@
 #include "MathFunction.hpp"
 #include "parser.hpp"
 
-MathFunction::MathFunction(const QColor &col) : func_string(""), f(0), parser(new parser::unary_function_parser), color(col) { }
+using parser::unary_function_parser;
+
+MathFunction::MathFunction(const QColor &col) : func_string(""), f(0), parser(unary_function_parser::getParser()), color(col) { }
 
 MathFunction::MathFunction(const std::string &s, const QColor &col) : func_string(s), f(0),
-								      parser(new parser::unary_function_parser), color(col) {
+								      parser(unary_function_parser::getParser()), color(col) {
   parse();
 }
 
@@ -21,6 +23,11 @@ bool MathFunction::parse() {
     f = parser->getFunction();
   }
   return r;
+}
+
+void MathFunction::setUStepsize(const double &d) {
+  if(f)
+    f->setStepsize(d);
 }
 
 double MathFunction::operator()(const double &d) const {
