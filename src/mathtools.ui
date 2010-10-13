@@ -428,6 +428,13 @@
              </property>
             </widget>
            </item>
+           <item row="1" column="1">
+            <widget class="QPushButton" name="toFilePushButton">
+             <property name="text">
+              <string>ToFile</string>
+             </property>
+            </widget>
+           </item>
           </layout>
          </widget>
         </item>
@@ -476,6 +483,7 @@
     <slot>autoXTicks(bool)</slot>
     <slot>autoYTicks(bool)</slot>
     <slot>setStandardWindow()</slot>
+    <slot>f1ToFile()</slot>
    </slots>
   </customwidget>
  </customwidgets>
@@ -878,6 +886,22 @@
     <hint type="destinationlabel">
      <x>406</x>
      <y>406</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>toFilePushButton</sender>
+   <signal>clicked()</signal>
+   <receiver>plotter</receiver>
+   <slot>f1ToFile()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>267</x>
+     <y>750</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>457</x>
+     <y>767</y>
     </hint>
    </hints>
   </connection>

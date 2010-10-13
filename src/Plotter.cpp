@@ -1,5 +1,6 @@
 #include <vector>
 #include <cmath>
+#include <fstream>
 
 #include <QtGui/QFrame>
 #include <QtGui/QPaintEvent>
@@ -12,8 +13,8 @@
 
 Plotter::Plotter(QWidget *parent) : QFrame(parent),
 				    xmin(-10), xmax(10), ymin(-10), ymax(10), xticks(1), yticks(1),
-				    compAutoXTicks(false), compAutoYTicks(false),
-				    leftPressed(false) {
+				    compAutoXTicks(false), compAutoYTicks(false), leftPressed(false),
+				    verticalCorrection(true) {
   // test code: generate a test function
   
   mfunc.push_back(std::string(""));
@@ -36,9 +37,10 @@ MathFunction& Plotter::getFunction(int index) {
 
 void Plotter::paintEvent(QPaintEvent *) {
   bool nextIsMove;
-  double y;
+  double y, yold;
 
   computeCSParameters();
+  const double xustep = 1.0/xstep;
 
   QPainter p(this);
 
@@ -50,15 +52,21 @@ void Plotter::paintEvent(QPaintEvent *) {
   // draw functions
   for(int i=0; i<4; ++i)
     if(mfunc[i].parse()) {  // function term is parsable hence evaluable
+      mfunc[i].setUStepsize(xustep);
+
       QPainterPath pathstroke;
       nextIsMove = true;
 
       p.setPen(QPen(mfunc[i].getColor(), 2));
 
       for(int x=0; x<=winwidth; ++x) {
+	// compute value of functions
 	y = mfunc[i](xmin+x/xstep);
+	if(!x)
+	  yold = y;
 	
-	if(std::isnan(y))
+	if(verticalCorrection && std::abs(y-yold)>2*(ymax-ymin) ||
+	   std::isnan(y) || std::isinf(y))
 	  nextIsMove = true;
 	else
 	  if(nextIsMove) {
@@ -67,6 +75,7 @@ void Plotter::paintEvent(QPaintEvent *) {
 	  } else {
 	    pathstroke.lineTo(x, winheight-roundi((y-ymin)*ystep));
 	  }
+	yold = y;
       }
       p.drawPath(pathstroke);
     }
@@ -211,6 +220,7 @@ void Plotter::zoomToCenter(int wx, int wy, double f) {
   emit newXMax(xmax);
   emit newYMin(ymin);
   emit newYMax(ymax);
+  setCenter((xmax+xmin)/2, (ymax+ymin)/2);
 }
 
 void Plotter::wheelEvent(QWheelEvent *e) {
@@ -319,4 +329,16 @@ void Plotter::setStandardWindow() {
   emit newXMax(xmax);
   emit newYMin(ymin);
   emit newYMax(ymax);
+}
+
+void Plotter::f1ToFile() {
+  std::ofstream debug_file;
+  debug_file.open("f1_vals.txt");
+
+  for(int x=0; x<=winwidth; ++x) {
+    debug_file << "(" << xmin+x/xstep << ", " << mfunc[0](xmin+x/xstep) << ") ";
+    if(!(x%5))
+      debug_file << std::endl;
+  }
+  debug_file.close();
 }

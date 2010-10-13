@@ -29,7 +29,6 @@ protected:  // all these methods are overwritten
   void wheelEvent(QWheelEvent *);
 
 private:
-
   // minimum and maximum of real view window
   double xmin, xmax, ymin, ymax;
   int winwidth, winheight;
@@ -40,6 +39,9 @@ private:
 
   // compute x- and y-ticks automatically
   bool compAutoXTicks, compAutoYTicks;
+
+  // flag to determine whether to draw vertical lines
+  bool verticalCorrection;
 
   // for mouse movement of the graph
   bool leftPressed;
@@ -53,7 +55,6 @@ private:
 
   // pixels per unit
   double xstep, ystep;
-
 
   // old values for tracking resize and move operations
   struct old_vals_t {
@@ -91,6 +92,10 @@ public slots:
   void autoYTicks(bool);
 
   void setStandardWindow();
+
+  void f1ToFile();
+  void setVerticalCorrection(bool v) { verticalCorrection = v; }
+
 signals:
   void newXMin(double);
   void newXMax(double);

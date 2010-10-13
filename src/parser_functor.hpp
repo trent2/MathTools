@@ -2,6 +2,7 @@
 #define __PARSER_FUNCTOR_HPP__
 
 #include <cmath>
+#include <limits>
 
 /** It was necessary to reimplement subset of the predefined methods and
     classes from the <functional>-header. The reason is simple:
@@ -17,12 +18,20 @@ namespace parser {
   namespace functor {
 
     // prototypes for unary and binary functions
-    class unary_function {// : public std::unary_function<double, double> {
+    class unary_function {
     public:
-      virtual double operator()(const double &d) const = 0;
-      virtual ~unary_function() { }
+      unary_function() : __stepsize(0) {}
+      virtual double operator()(const double&) const = 0;
+      virtual ~unary_function() {}
+
+      // set the stepsize of the display (i.e. the increment in x direction for
+      // drawing one line segment of the function graph); used e.g.
+      // for computing derivatives and integrals
+      virtual void setStepsize(const double &ss) { __stepsize = ss; };
+
     protected:
       double __r;
+      double __stepsize;
     };
 
     class binary_function { // : public std::binary_function<double, double, double> {
@@ -32,13 +41,12 @@ namespace parser {
     };
 
     // pointer to unary function type
-    class pointer_to_unary_function : public unary_function
-    {
+    class pointer_to_unary_function : public unary_function {
     protected:
       double (*_M_ptr)(double);
 
     public:
-      pointer_to_unary_function() { }
+      pointer_to_unary_function() : unary_function() { }
 
       explicit
       pointer_to_unary_function(double (*__x)(double))
@@ -63,7 +71,7 @@ namespace parser {
 
     class const_unary_function : public unary_function {
     public:
-      const_unary_function(double v) { __r = v; }
+      const_unary_function(double v) : unary_function() { __r = v; }
       inline double operator()(double const&) const {
 	return __r;
       }
@@ -78,6 +86,25 @@ namespace parser {
       }
     };
 
+    class derivative : public unary_function {
+    protected:
+      unary_function *_M_fn1;
+
+    public:
+      derivative(unary_function *__x) : unary_function(), _M_fn1(__x) {}
+      ~derivative() {
+	delete _M_fn1;
+      }
+
+      void setStepsize(const double &ss) {
+	__stepsize = ss;
+	_M_fn1->setStepsize(ss);
+      };
+
+      inline double operator()(const double &d) const
+      { return ((*_M_fn1)(d+__stepsize)-(*_M_fn1)(d))/__stepsize; }
+    };
+
     // composition of functions
     class unary_compose : public unary_function
     {
@@ -87,12 +114,18 @@ namespace parser {
 
     public:
       unary_compose(unary_function *__x, unary_function *__y)
-	: _M_fn1(__x), _M_fn2(__y) {}
+	: unary_function(), _M_fn1(__x), _M_fn2(__y) {}
 
       inline ~unary_compose() {
 	delete _M_fn1;
 	delete _M_fn2;
       }
+
+      void setStepsize(const double &ss) {
+	__stepsize = ss;
+	_M_fn1->setStepsize(ss);
+	_M_fn2->setStepsize(ss);
+      };
 
       inline double operator()(const double& __x) const
       { return (*_M_fn1)((*_M_fn2)(__x)); }
@@ -112,7 +145,7 @@ namespace parser {
     public:
       binary_compose(binary_function *__x, unary_function *__y,
 		     unary_function *__z)
-	: _M_fn1(__x), _M_fn2(__y), _M_fn3(__z) {
+	: unary_function(), _M_fn1(__x), _M_fn2(__y), _M_fn3(__z) {
       }
 
       ~binary_compose() {
@@ -120,6 +153,12 @@ namespace parser {
 	delete _M_fn2;
 	delete _M_fn3;
       }
+
+      void setStepsize(const double &ss) {
+	__stepsize = ss;
+	_M_fn2->setStepsize(ss);
+	_M_fn3->setStepsize(ss);
+      };
 
       inline double operator()(const double& __x) const
       { return (*_M_fn1)((*_M_fn2)(__x), (*_M_fn3)(__x)); }
@@ -163,7 +202,7 @@ namespace parser {
       { return std::pow(__x, __y); }
     };
   }
-  
+
   typedef functor::unary_function un_fun;
 }
 #endif
