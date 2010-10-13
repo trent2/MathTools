@@ -20,7 +20,15 @@ namespace parser {
 
   typedef std::string::const_iterator c_str_it;
 
-  struct unary_function_parser : qi::grammar<c_str_it, ascii::space_type> {
+  class unary_function_parser : public qi::grammar<c_str_it, ascii::space_type> {
+  public:
+    static unary_function_parser* getParser();
+
+    bool parse(const std::string &s);
+    inline un_fun* getFunction() const {
+      return f;
+    }
+  protected:
     // using functors to generate an evaluable function from the string
     qi::rule<c_str_it, ascii::space_type> Start, S, F, P, newStart, Func, Consts;
     ustack _eval;
@@ -30,11 +38,8 @@ namespace parser {
     unary_function_parser();
     ~unary_function_parser();
 
-    bool parse(const std::string &s);
 
-    inline un_fun* getFunction() const {
-      return f;
-    }
+    static unary_function_parser singleton_parser;
   };
 }
 #endif

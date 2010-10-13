@@ -4,6 +4,12 @@
 #include "parser_helper.hpp"
 
 namespace parser {
+  unary_function_parser unary_function_parser::singleton_parser;
+
+  unary_function_parser* unary_function_parser::getParser() {
+    return &singleton_parser;
+  }
+
   unary_function_parser::unary_function_parser() : unary_function_parser::base_type(Start), f(0), func_symbol(new _helper::func_symbol_struct) {
     using qi::double_;
     using qi::lit;

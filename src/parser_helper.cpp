@@ -13,7 +13,8 @@ namespace parser {
 	("ln", ln)
 	("lg", lg)
 	("sqrt", sqrt)
-	("abs", abs);
+	("abs", abs)
+	("D", D);
     }
 
     void _push_const::operator()(const double &d, qi::unused_type, bool&) const {
@@ -65,6 +66,7 @@ namespace parser {
       case lg: _eval.push(compose1(compose2(new divides(), ptr_fun(std::log), new const_unary_function(std::log(10))), f)); break;
       case sqrt: _eval.push(compose1(ptr_fun(std::sqrt), f));break;
       case abs: _eval.push(compose1(ptr_fun(std::abs), f));break;
+      case D: _eval.push(new derivative(f));break;
       default: _eval.push(f);
       }
     }

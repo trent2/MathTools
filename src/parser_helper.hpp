@@ -12,7 +12,7 @@ namespace parser {
   namespace _helper {
     const double pi = std::atan(1)*4;
     const double exp1 = std::exp(1);
-    enum parser_fun { sin, cos, tan, atan, exp, ln, lg, sqrt, abs };
+    enum parser_fun { sin, cos, tan, atan, exp, ln, lg, sqrt, abs, D };
 
     namespace qi = boost::spirit::qi;
     namespace ascii = boost::spirit::ascii;
