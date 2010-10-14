@@ -13,4 +13,12 @@ double round(double d) {
 
 template <typename T>
 T sign(T t) { return (t < 0) ? T(-1) : T(1); }
+
+double max(double d1, double d2) {
+  return (d1>d2?d1:d2);
+}
+
+double min(double d1, double d2) {
+  return (d1<d2?d1:d2);
+}
 #endif
