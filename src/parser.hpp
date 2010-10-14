@@ -30,7 +30,13 @@ namespace parser {
     }
   protected:
     // using functors to generate an evaluable function from the string
-    qi::rule<c_str_it, ascii::space_type> Start, S, F, P, newStart, Func, Consts;
+    qi::rule<c_str_it, ascii::space_type> Start,                       // start non-terminal
+      S,                                                               // summand non-terminal
+      F,                                                               // factor non-terminal
+      sF,                                                              // signed factor non-terminal
+      P,                                                               // exponential (power) non-terminal
+      Func,                                                            // (unary) function non-terminal
+      Consts;                                                          // constant non-terminal
     ustack _eval;
     un_fun *f;  // return function object
     _helper::func_symbol_struct *func_symbol;

@@ -22,20 +22,20 @@ namespace parser {
       Consts = no_case[string("pi")]                   [_push_const(_eval)] |        // evaluate constants
 	no_case[string("e")]                           [_push_const(_eval)];
 
-      Func = ((*func_symbol) >> newStart)                   [_do_un_op(_eval)];         // evaluate unary functions (sin, cos, ...)
-
-      newStart = '(' >> Start >> ')';
+      Func = (-(*func_symbol) >> '(' >> Start >> ')')     [_do_un_op(_eval)];         // evaluate unary functions (sin, cos, ...)
 
       P = double_                                      [_push_const(_eval)] |
 	no_case[lit('x')]                                [_identity(_eval)] |
-	newStart | Func | Consts;
+	Func | Consts;
 
       F = P >> -(char_('^') >> P)                       [_do_bin_op(_eval)];         // power-chains wo parentheses are not allowed 
 
-      S = ((char_('-') >> F)                            [_do_un_op(_eval)] |        // evaluate minus sign in front of a factor
-	    -lit('+') >> F )                  >>
-	*((char_('*') >> F)                             [_do_bin_op(_eval)] |
-	  (char_('/') >> F)                             [_do_bin_op(_eval)]);
+      sF = (char_('-') >> F)                            [_do_un_op(_eval)] |
+	-lit('+') >> F;                   // evaluate minus sign in front of a factor
+
+      S = sF                                        >>
+	*((char_('*') >> sF)                            [_do_bin_op(_eval)] |
+	  (char_('/') >> sF)                            [_do_bin_op(_eval)]);
 
       Start =  S >> *((char_('+') >>   S)               [_do_bin_op(_eval)] |
 		      (char_('-') >> S)                 [_do_bin_op(_eval)]);

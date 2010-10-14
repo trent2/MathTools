@@ -17,6 +17,8 @@ namespace parser {
     namespace qi = boost::spirit::qi;
     namespace ascii = boost::spirit::ascii;
 
+    using boost::optional;
+
     struct func_symbol_struct : qi::symbols<char, unsigned> {
       func_symbol_struct();
     };
@@ -42,7 +44,7 @@ namespace parser {
 
     struct _do_un_op {
       _do_un_op(ustack &eval) : _eval(eval) { }
-      void operator()(unsigned int op_code, qi::unused_type, bool&) const;
+      void operator()(optional<unsigned int> op_code, qi::unused_type, bool&) const;
       ustack &_eval;
     };
   }
