@@ -190,22 +190,11 @@
           <property name="frameShadow">
            <enum>QFrame::Raised</enum>
           </property>
+          <zorder>presentationGroupBox</zorder>
          </widget>
         </item>
         <item row="1" column="0">
          <widget class="QGroupBox" name="controlGBox">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="minimumSize">
-           <size>
-            <width>321</width>
-            <height>171</height>
-           </size>
-          </property>
           <property name="maximumSize">
            <size>
             <width>321</width>
@@ -216,223 +205,216 @@
            <string>Control</string>
           </property>
           <layout class="QGridLayout" name="gridLayout_3">
-           <item row="0" column="0">
-            <layout class="QFormLayout" name="formLayout_3">
-             <property name="fieldGrowthPolicy">
-              <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
-             </property>
-             <item row="0" column="0">
-              <widget class="QLabel" name="xminLabel">
-               <property name="text">
-                <string>x-min</string>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="1">
-              <widget class="QDoubleSpinBox" name="xminDSpinBox">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="minimum">
-                <double>-100.000000000000000</double>
-               </property>
-               <property name="maximum">
-                <double>100.000000000000000</double>
-               </property>
-               <property name="value">
-                <double>-10.000000000000000</double>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="0">
-              <widget class="QLabel" name="xmaxLabel">
-               <property name="text">
-                <string>x-max</string>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="1">
-              <widget class="QDoubleSpinBox" name="xmaxDSpinBox">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="minimum">
-                <double>-100.000000000000000</double>
-               </property>
-               <property name="maximum">
-                <double>100.000000000000000</double>
-               </property>
-               <property name="value">
-                <double>10.000000000000000</double>
-               </property>
-              </widget>
-             </item>
-             <item row="2" column="0">
-              <widget class="QLabel" name="yminLabel">
-               <property name="text">
-                <string>y-min</string>
-               </property>
-              </widget>
-             </item>
-             <item row="2" column="1">
-              <widget class="QDoubleSpinBox" name="yminDSpinBox">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="minimum">
-                <double>-100.000000000000000</double>
-               </property>
-               <property name="maximum">
-                <double>100.000000000000000</double>
-               </property>
-               <property name="value">
-                <double>-10.000000000000000</double>
-               </property>
-              </widget>
-             </item>
-             <item row="3" column="0">
-              <widget class="QLabel" name="ymaxLabel">
-               <property name="text">
-                <string>y-max</string>
-               </property>
-              </widget>
-             </item>
-             <item row="3" column="1">
-              <widget class="QDoubleSpinBox" name="ymaxDSpinBox">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="minimum">
-                <double>-100.000000000000000</double>
-               </property>
-               <property name="maximum">
-                <double>100.000000000000000</double>
-               </property>
-               <property name="value">
-                <double>10.000000000000000</double>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </item>
-           <item row="0" column="1">
-            <layout class="QFormLayout" name="formLayout_2">
-             <item row="0" column="0">
-              <widget class="QLabel" name="xticksLabel">
-               <property name="minimumSize">
-                <size>
-                 <width>0</width>
-                 <height>15</height>
-                </size>
-               </property>
-               <property name="text">
-                <string>x-Ticks</string>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="1">
-              <widget class="QDoubleSpinBox" name="xticksDSpinBox">
-               <property name="minimumSize">
-                <size>
-                 <width>0</width>
-                 <height>25</height>
-                </size>
-               </property>
-               <property name="decimals">
-                <number>4</number>
-               </property>
-               <property name="minimum">
-                <double>-99999.000000000000000</double>
-               </property>
-               <property name="maximum">
-                <double>99999.000000000000000</double>
-               </property>
-               <property name="value">
-                <double>1.000000000000000</double>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="0" colspan="2">
-              <widget class="QCheckBox" name="xAutoCheckBox">
-               <property name="minimumSize">
-                <size>
-                 <width>0</width>
-                 <height>21</height>
-                </size>
-               </property>
-               <property name="text">
-                <string>auto</string>
-               </property>
-              </widget>
-             </item>
-             <item row="2" column="0">
-              <widget class="QLabel" name="yticksLabel">
-               <property name="text">
-                <string>y-Ticks</string>
-               </property>
-              </widget>
-             </item>
-             <item row="2" column="1">
-              <widget class="QDoubleSpinBox" name="yticksDSpinBox">
-               <property name="minimumSize">
-                <size>
-                 <width>0</width>
-                 <height>25</height>
-                </size>
-               </property>
-               <property name="decimals">
-                <number>4</number>
-               </property>
-               <property name="minimum">
-                <double>-99999.000000000000000</double>
-               </property>
-               <property name="maximum">
-                <double>99999.000000000000000</double>
-               </property>
-               <property name="value">
-                <double>1.000000000000000</double>
-               </property>
-              </widget>
-             </item>
-             <item row="3" column="0" colspan="2">
-              <widget class="QCheckBox" name="yAutoCheckBox">
-               <property name="minimumSize">
-                <size>
-                 <width>0</width>
-                 <height>21</height>
-                </size>
-               </property>
-               <property name="text">
-                <string>auto</string>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </item>
-           <item row="1" column="0">
+           <item row="2" column="0">
             <widget class="QPushButton" name="standardPushButton">
              <property name="text">
               <string>Standard</string>
              </property>
             </widget>
            </item>
-           <item row="1" column="1">
+           <item row="2" column="1">
             <widget class="QPushButton" name="toFilePushButton">
              <property name="text">
               <string>ToFile</string>
              </property>
+            </widget>
+           </item>
+           <item row="0" column="0" rowspan="2">
+            <widget class="QGroupBox" name="csGroupBox">
+             <property name="title">
+              <string>Coordinate Window</string>
+             </property>
+             <layout class="QFormLayout" name="formLayout">
+              <item row="0" column="0">
+               <widget class="QLabel" name="xminLabel">
+                <property name="text">
+                 <string>x-min</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="1">
+               <widget class="QDoubleSpinBox" name="xminDSpinBox">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimum">
+                 <double>-99999.000000000000000</double>
+                </property>
+                <property name="maximum">
+                 <double>99999.000000000000000</double>
+                </property>
+                <property name="value">
+                 <double>-10.000000000000000</double>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="0">
+               <widget class="QLabel" name="xmaxLabel">
+                <property name="text">
+                 <string>x-max</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="1">
+               <widget class="QDoubleSpinBox" name="xmaxDSpinBox">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimum">
+                 <double>-99999.000000000000000</double>
+                </property>
+                <property name="maximum">
+                 <double>99999.000000000000000</double>
+                </property>
+                <property name="value">
+                 <double>10.000000000000000</double>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="0">
+               <widget class="QLabel" name="yminLabel">
+                <property name="text">
+                 <string>y-min</string>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="1">
+               <widget class="QDoubleSpinBox" name="yminDSpinBox">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimum">
+                 <double>-99999.000000000000000</double>
+                </property>
+                <property name="maximum">
+                 <double>99999.000000000000000</double>
+                </property>
+                <property name="value">
+                 <double>-10.000000000000000</double>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="0">
+               <widget class="QLabel" name="ymaxLabel">
+                <property name="text">
+                 <string>y-max</string>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="1">
+               <widget class="QDoubleSpinBox" name="ymaxDSpinBox">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimum">
+                 <double>-99999.000000000000000</double>
+                </property>
+                <property name="maximum">
+                 <double>99999.000000000000000</double>
+                </property>
+                <property name="value">
+                 <double>10.000000000000000</double>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <widget class="QGroupBox" name="presentationGroupBox">
+             <property name="title">
+              <string>Presentation</string>
+             </property>
+             <layout class="QFormLayout" name="formLayout_2">
+              <property name="fieldGrowthPolicy">
+               <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
+              </property>
+              <item row="0" column="0">
+               <widget class="QLabel" name="xticksLabel">
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>15</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>x-Ticks</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="1">
+               <widget class="QDoubleSpinBox" name="xticksDSpinBox">
+                <property name="decimals">
+                 <number>4</number>
+                </property>
+                <property name="minimum">
+                 <double>0.000000000000000</double>
+                </property>
+                <property name="maximum">
+                 <double>1000.000000000000000</double>
+                </property>
+                <property name="value">
+                 <double>0.100000000000000</double>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="1">
+               <widget class="QCheckBox" name="xAutoCheckBox">
+                <property name="text">
+                 <string>auto</string>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="0">
+               <widget class="QLabel" name="yticksLabel">
+                <property name="text">
+                 <string>y-Ticks</string>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="1">
+               <widget class="QDoubleSpinBox" name="yticksDSpinBox">
+                <property name="decimals">
+                 <number>4</number>
+                </property>
+                <property name="minimum">
+                 <double>0.000000000000000</double>
+                </property>
+                <property name="maximum">
+                 <double>1000.000000000000000</double>
+                </property>
+                <property name="value">
+                 <double>0.100000000000000</double>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="1">
+               <widget class="QCheckBox" name="yAutoCheckBox">
+                <property name="text">
+                 <string>auto</string>
+                </property>
+               </widget>
+              </item>
+              <item row="4" column="1">
+               <widget class="QCheckBox" name="gridCheckBox">
+                <property name="text">
+                 <string>grid</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
             </widget>
            </item>
           </layout>
@@ -484,6 +466,7 @@
     <slot>autoYTicks(bool)</slot>
     <slot>setStandardWindow()</slot>
     <slot>f1ToFile()</slot>
+    <slot>toggleGrid(bool)</slot>
    </slots>
   </customwidget>
  </customwidgets>
@@ -497,11 +480,11 @@
    <hints>
     <hint type="sourcelabel">
      <x>241</x>
-     <y>642</y>
+     <y>617</y>
     </hint>
     <hint type="destinationlabel">
      <x>242</x>
-     <y>611</y>
+     <y>586</y>
     </hint>
    </hints>
   </connection>
@@ -513,7 +496,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>149</x>
-     <y>611</y>
+     <y>586</y>
     </hint>
     <hint type="destinationlabel">
      <x>513</x>
@@ -529,7 +512,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>116</x>
-     <y>642</y>
+     <y>617</y>
     </hint>
     <hint type="destinationlabel">
      <x>519</x>
@@ -545,7 +528,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>117</x>
-     <y>673</y>
+     <y>648</y>
     </hint>
     <hint type="destinationlabel">
      <x>465</x>
@@ -561,7 +544,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>104</x>
-     <y>704</y>
+     <y>679</y>
     </hint>
     <hint type="destinationlabel">
      <x>403</x>
@@ -576,8 +559,8 @@
    <slot>setXTicks(double)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>328</x>
-     <y>611</y>
+     <x>318</x>
+     <y>599</y>
     </hint>
     <hint type="destinationlabel">
      <x>420</x>
@@ -593,11 +576,11 @@
    <hints>
     <hint type="sourcelabel">
      <x>209</x>
-     <y>700</y>
+     <y>675</y>
     </hint>
     <hint type="destinationlabel">
      <x>257</x>
-     <y>669</y>
+     <y>644</y>
     </hint>
    </hints>
   </connection>
@@ -613,7 +596,7 @@
     </hint>
     <hint type="destinationlabel">
      <x>85</x>
-     <y>611</y>
+     <y>586</y>
     </hint>
    </hints>
   </connection>
@@ -629,7 +612,7 @@
     </hint>
     <hint type="destinationlabel">
      <x>134</x>
-     <y>642</y>
+     <y>617</y>
     </hint>
    </hints>
   </connection>
@@ -645,7 +628,7 @@
     </hint>
     <hint type="destinationlabel">
      <x>103</x>
-     <y>673</y>
+     <y>648</y>
     </hint>
    </hints>
   </connection>
@@ -660,8 +643,8 @@
      <y>494</y>
     </hint>
     <hint type="destinationlabel">
-     <x>81</x>
-     <y>704</y>
+     <x>156</x>
+     <y>692</y>
     </hint>
    </hints>
   </connection>
@@ -676,8 +659,8 @@
      <y>382</y>
     </hint>
     <hint type="destinationlabel">
-     <x>328</x>
-     <y>611</y>
+     <x>318</x>
+     <y>599</y>
     </hint>
    </hints>
   </connection>
@@ -693,7 +676,7 @@
     </hint>
     <hint type="destinationlabel">
      <x>316</x>
-     <y>669</y>
+     <y>644</y>
     </hint>
    </hints>
   </connection>
@@ -705,7 +688,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>294</x>
-     <y>642</y>
+     <y>617</y>
     </hint>
     <hint type="destinationlabel">
      <x>598</x>
@@ -721,7 +704,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>303</x>
-     <y>700</y>
+     <y>675</y>
     </hint>
     <hint type="destinationlabel">
      <x>537</x>
@@ -737,7 +720,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>308</x>
-     <y>669</y>
+     <y>644</y>
     </hint>
     <hint type="destinationlabel">
      <x>589</x>
@@ -902,6 +885,22 @@
     <hint type="destinationlabel">
      <x>457</x>
      <y>767</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>gridCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>plotter</receiver>
+   <slot>toggleGrid(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>218</x>
+     <y>706</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>406</x>
+     <y>702</y>
     </hint>
    </hints>
   </connection>

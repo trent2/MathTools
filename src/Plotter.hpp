@@ -40,6 +40,9 @@ private:
   // compute x- and y-ticks automatically
   bool compAutoXTicks, compAutoYTicks;
 
+  // draw grid
+  bool drawGrid;
+
   // flag to determine whether to draw vertical lines
   bool verticalCorrection;
 
@@ -90,6 +93,7 @@ public slots:
   void setYTicks(double yticks);
   void autoXTicks(bool);
   void autoYTicks(bool);
+  void toggleGrid(bool);
 
   void setStandardWindow();
 

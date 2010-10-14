@@ -13,8 +13,8 @@
 
 Plotter::Plotter(QWidget *parent) : QFrame(parent),
 				    xmin(-10), xmax(10), ymin(-10), ymax(10), xticks(1), yticks(1),
-				    compAutoXTicks(false), compAutoYTicks(false), leftPressed(false),
-				    verticalCorrection(true) {
+				    compAutoXTicks(false), compAutoYTicks(false), drawGrid(false),
+				    leftPressed(false), verticalCorrection(true) {
   // test code: generate a test function
   
   mfunc.push_back(std::string(""));
@@ -83,14 +83,22 @@ void Plotter::paintEvent(QPaintEvent *) {
 
 void Plotter::plotGrid(QPainter &p) {
   double tick;
+  const double
+    xtop = (drawGrid ? winwidth : roundi(-xmin*xstep)+3),
+    xbot = (drawGrid ? 0 : roundi(-xmin*xstep)-3),
+    ytop = (drawGrid ? 0 : winheight-roundi(-ymin*ystep)-3),
+    ybot = (drawGrid ? winheight : winheight-roundi(-ymin*ystep)+3);
+
   
   // is there a y-axis?
-  if(sign(xmin)*sign(xmax) <= 0) {
+  if(xbot>=0 && xtop<=winwidth || drawGrid) {
     tick = std::floor(ymin/yticks)*yticks;
 
+    if(drawGrid)
+      p.setPen(Qt::DashLine);
     // draw tick marks
     while(tick <= ymax) {
-      p.drawLine(roundi(-xmin*xstep)-3, winheight-roundi((tick-ymin)*ystep), roundi(-xmin*xstep)+3, winheight-roundi((tick-ymin)*ystep));
+      p.drawLine(max(0,xbot), winheight-roundi((tick-ymin)*ystep), min(winwidth, xtop), winheight-roundi((tick-ymin)*ystep));
       tick += yticks;
     }
 
@@ -100,18 +108,22 @@ void Plotter::plotGrid(QPainter &p) {
       p.drawText(roundi(-xmin*xstep)-15, winheight-roundi((tick-ymin)*ystep)+5, QString::number(tick, 'g', 2));
       tick += descDistY;
     }
+    p.setPen(Qt::SolidLine);
 
     // draw axis
-    p.drawLine(roundi(-xmin*xstep), 0, roundi(-xmin*xstep), winheight);
+    if(xbot>=0 && xtop<=winwidth)
+       p.drawLine(roundi(-xmin*xstep), 0, roundi(-xmin*xstep), winheight);
   }
 
   // is there an x-axis?
-  if(sign(ymin)*sign(ymax) <= 0) {
+  if(ybot>=0 && ytop <=winheight || drawGrid) {
     tick = std::floor(xmin/xticks)*xticks;
 
+    if(drawGrid)
+      p.setPen(Qt::DashLine);
     // draw tick marks
-   while(tick <= xmax) {
-      p.drawLine(roundi((tick-xmin)*xstep), winheight-roundi(-ymin*ystep)+3, roundi((tick-xmin)*xstep), winheight-roundi(-ymin*ystep)-3);
+    while(tick <= xmax) {
+      p.drawLine(roundi((tick-xmin)*xstep), min(winheight,ybot), roundi((tick-xmin)*xstep), max(0,ytop));
       tick += xticks;
     }
 
@@ -122,8 +134,11 @@ void Plotter::plotGrid(QPainter &p) {
       tick += descDistX;
     }
 
+    p.setPen(Qt::SolidLine);
     // draw axis
-    p.drawLine(0, winheight-roundi(-ymin*ystep), winwidth, winheight-roundi(-ymin*ystep));
+
+    if(ybot>=0 && ytop <=winheight)
+      p.drawLine(0, winheight-roundi(-ymin*ystep), winwidth, winheight-roundi(-ymin*ystep));
   }
 }
 
@@ -317,6 +332,11 @@ void Plotter::autoXTicks(bool b) {
 
 void Plotter::autoYTicks(bool b) {
   compAutoYTicks = b;
+  update();
+}
+
+void Plotter::toggleGrid(bool b) {
+  drawGrid = b;
   update();
 }
 
