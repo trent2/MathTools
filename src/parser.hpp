@@ -5,7 +5,7 @@
 
 #include <boost/spirit/include/qi.hpp>
 
-#include "parser_functor.hpp"
+#include "functor.hpp"
 
 namespace parser {
 
@@ -13,7 +13,7 @@ namespace parser {
     struct func_symbol_struct;
   }
 
-  typedef std::stack<un_fun*> ustack;
+  typedef std::stack<functor::un_fun*> ustack;
 
   namespace qi = boost::spirit::qi;
   namespace ascii = boost::spirit::ascii;
@@ -25,7 +25,7 @@ namespace parser {
     static unary_function_parser* getParser();
 
     bool parse(const std::string &s);
-    inline un_fun* getFunction() const {
+    inline functor::un_fun* getFunction() const {
       return f;
     }
   protected:
@@ -38,7 +38,7 @@ namespace parser {
       Func,                                                            // (unary) function non-terminal
       Consts;                                                          // constant non-terminal
     ustack _eval;
-    un_fun *f;  // return function object
+    functor::un_fun *f;  // return function object
     _helper::func_symbol_struct *func_symbol;
 
     unary_function_parser();

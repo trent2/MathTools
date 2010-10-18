@@ -4,10 +4,10 @@
 
 #include <boost/spirit/include/qi.hpp>
 
-#include "parser_functor.hpp"
+#include "functor.hpp"
 
 namespace parser {
-  typedef std::stack<un_fun*> ustack;
+  typedef std::stack<functor::un_fun*> ustack;
 
   namespace _helper {
     const double pi = std::atan(1)*4;

@@ -4,7 +4,7 @@
 #include <string>
 #include <QColor>
 
-#include "parser_functor.hpp"
+#include "functor.hpp"
 
 namespace parser {
   struct unary_function_parser;
@@ -37,7 +37,7 @@ public:
 
 private:
   std::string func_string;
-  parser::un_fun *f;
+  functor::un_fun *mF;
   parser::unary_function_parser *parser;
   QColor color;
 };

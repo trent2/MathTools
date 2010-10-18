@@ -2,7 +2,7 @@
 
 namespace parser {
   namespace _helper {
-    using namespace parser::functor;
+    using namespace functor;
 
     func_symbol_struct::func_symbol_struct() {
       add("sin", sin)
