@@ -190,7 +190,6 @@
           <property name="frameShadow">
            <enum>QFrame::Raised</enum>
           </property>
-          <zorder>presentationGroupBox</zorder>
          </widget>
         </item>
         <item row="1" column="0">
@@ -366,7 +365,7 @@
                  <double>1000.000000000000000</double>
                 </property>
                 <property name="value">
-                 <double>0.100000000000000</double>
+                 <double>1.000000000000000</double>
                 </property>
                </widget>
               </item>
@@ -396,7 +395,7 @@
                  <double>1000.000000000000000</double>
                 </property>
                 <property name="value">
-                 <double>0.100000000000000</double>
+                 <double>1.000000000000000</double>
                 </property>
                </widget>
               </item>
