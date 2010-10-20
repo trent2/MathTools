@@ -4,8 +4,9 @@
 #include <string>
 #include <QColor>
 
-#include "functor.hpp"
+#include "functor_unary.hpp"
 
+// forward declarations
 namespace parser {
   struct unary_function_parser;
 }

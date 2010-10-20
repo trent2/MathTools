@@ -1,21 +1,19 @@
 #ifndef __PARSER_HELPER_HPP__
 #define __PARSER_HELPER_HPP__
 #include <stack>
+#include <vector>
 
-#include <boost/spirit/include/qi.hpp>
+#include <boost/spirit/include/qi_symbols.hpp>
 
-#include "functor.hpp"
+#include "functor_unary.hpp"
 
 namespace parser {
-  typedef std::stack<functor::un_fun*> ustack;
+  typedef std::stack<functor::unary_function*> ustack;
 
   namespace _helper {
-    const double pi = std::atan(1)*4;
-    const double exp1 = std::exp(1);
     enum parser_fun { sin, cos, tan, atan, exp, ln, lg, sqrt, abs, D };
 
     namespace qi = boost::spirit::qi;
-    namespace ascii = boost::spirit::ascii;
 
     using boost::optional;
 
@@ -36,9 +34,10 @@ namespace parser {
       ustack &_eval;
     };
 
-    struct _do_bin_op {
-      _do_bin_op(ustack &eval) : _eval(eval) { }
-      void operator()(unsigned int op_code, qi::unused_type, bool&) const;
+    struct _do_mul_op {
+      _do_mul_op(ustack &eval) : _eval(eval) { }
+      void operator()(const std::vector<char>&, qi::unused_type, bool&) const;
+      void operator()(const char&, qi::unused_type, bool&) const;
       ustack &_eval;
     };
 

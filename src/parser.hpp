@@ -3,9 +3,11 @@
 #include <string>
 #include <stack>
 
-#include <boost/spirit/include/qi.hpp>
+#include <boost/spirit/include/qi_grammar.hpp>
+#include <boost/spirit/include/qi_rule.hpp>
+#include <boost/spirit/include/qi_char_class.hpp>
 
-#include "functor.hpp"
+#include "functor_unary.hpp"
 
 namespace parser {
 

@@ -14,31 +14,31 @@ namespace parser {
     using qi::double_;
     using qi::lit;
     using qi::char_;
-    using ascii::string;
+    using qi::string;
     using ascii::no_case;
 
     using namespace _helper;
 
-      Consts = no_case[string("pi")]                   [_push_const(_eval)] |        // evaluate constants
-	no_case[string("e")]                           [_push_const(_eval)];
+    Consts = no_case[string("pi")]                   [_push_const(_eval)] |        // evaluate constants
+      no_case[string("e")]                           [_push_const(_eval)];
 
-      Func = (-(*func_symbol) >> '(' >> Start >> ')')     [_do_un_op(_eval)];         // evaluate unary functions (sin, cos, ...)
+    Func = (-(*func_symbol) >> '(' >> Start >> ')')     [_do_un_op(_eval)];         // evaluate unary functions (sin, cos, ...)
 
-      P = double_                                      [_push_const(_eval)] |
-	no_case[lit('x')]                                [_identity(_eval)] |
-	Func | Consts;
+    P = double_                                      [_push_const(_eval)] |
+      no_case[lit('x')]                                [_identity(_eval)] |
+      Func | Consts;
 
-      F = P >> -(char_('^') >> P)                       [_do_bin_op(_eval)];         // power-chains wo parentheses are not allowed 
+    F = P >> -(char_('^') >> P)                       [_do_mul_op(_eval)];         // power-chains wo parentheses are not allowed 
 
-      sF = (char_('-') >> F)                            [_do_un_op(_eval)] |
-	-lit('+') >> F;                   // evaluate minus sign in front of a factor
+    sF = (char_('-') >> F)                            [_do_un_op(_eval)] |
+      -lit('+') >> F;                   // evaluate minus sign in front of a factor
 
-      S = sF                                        >>
-	*((char_('*') >> sF)                            [_do_bin_op(_eval)] |
-	  (char_('/') >> sF)                            [_do_bin_op(_eval)]);
+    S = sF                                        >>
+      *((+(char_('*') >> sF))                            [_do_mul_op(_eval)] |
+	(+(char_('/') >> sF))                            [_do_mul_op(_eval)]);
 
-      Start =  S >> *((char_('+') >>   S)               [_do_bin_op(_eval)] |
-		      (char_('-') >> S)                 [_do_bin_op(_eval)]);
+    Start =  S >> *((+(char_('+') >> S))                  [_do_mul_op(_eval)] |
+		    (+(char_('-') >> S))                  [_do_mul_op(_eval)]);
   }
 
   unary_function_parser::~unary_function_parser() {
