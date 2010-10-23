@@ -1,3 +1,4 @@
+#include <list>
 #include "parser_helper.hpp"
 #include "functor.hpp"
 
@@ -39,7 +40,8 @@ namespace parser {
 
     void _do_mul_op::operator()(const std::vector<char>& c, qi::unused_type, bool&) const {
       if(c.size()) {
-	std::vector<un_fun*> *v = new std::vector<un_fun*>;
+	std::list<un_fun*> *v = new std::list<un_fun*>;
+	
 	for(int i=0; i<=c.size(); ++i) {
 	  v->push_back(_eval.top());
 	  _eval.pop();
@@ -51,14 +53,16 @@ namespace parser {
 	case '-': _eval.push(compose(new minus(), v));break;
 	case '*': _eval.push(compose(new multiplies(), v));break;
 	case '/': _eval.push(compose(new divides(), v));break;
-	default: for(int i=v->size()-1; i>=0; --i) _eval.push((*v)[i]);
+	// put elements back
+	default: for(std::list<un_fun*>::reverse_iterator it = v->rbegin(); it != v->rend(); ++it)
+	    _eval.push(*it);
 	}
       }
     }
 
     void _do_mul_op::operator()(const char& c, qi::unused_type, bool&) const {
       if(c == '^') {
-	std::vector<un_fun*> *v = new std::vector<un_fun*>;
+	std::list<un_fun*> *v = new std::list<un_fun*>;
 	v->push_back(_eval.top());
 	_eval.pop();
 	v->push_back(_eval.top());
@@ -70,7 +74,7 @@ namespace parser {
 
     void _do_un_op::operator()(optional<unsigned int> op_code, qi::unused_type, bool&) const {
       if(op_code) {
-	std::vector<un_fun*> *v;
+	std::list<un_fun*> *v;
 	un_fun *f = _eval.top();
 	_eval.pop();
 
@@ -83,10 +87,10 @@ namespace parser {
 	case atan:_eval.push(compose1(ptr_fun(std::atan), f));break;
 	case exp: _eval.push(compose1(ptr_fun(std::exp), f));break;
 	case ln: _eval.push(compose1(ptr_fun(std::log), f));break;
-	case lg: v = new std::vector<un_fun*>;
-	  v->push_back(ptr_fun(std::log));
+	case lg: v = new std::list<un_fun*>;
+	  v->push_back(compose1(ptr_fun(std::log), f));
 	  v->push_back(new const_unary_function(std::log(10)));
-	  _eval.push(compose1(compose(new divides(), v), f)); break;
+	  _eval.push(compose(new divides(), v)); break;
 	case sqrt: _eval.push(compose1(ptr_fun(std::sqrt), f));break;
 	case abs: _eval.push(compose1(ptr_fun(std::abs), f));break;
 	case D: _eval.push(new derivative(f));break;
