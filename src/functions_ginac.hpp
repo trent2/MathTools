@@ -1,0 +1,9 @@
+#ifndef __FUNCTIONS_GINAC_HPP__
+#define __FUNCTIONS_GINAC_HPP__
+#include <ginac/ginac.h>
+
+DECLARE_FUNCTION_1P(lg)
+DECLARE_FUNCTION_1P(ln)
+DECLARE_FUNCTION_1P(sqrt)
+DECLARE_FUNCTION_1P(D)
+#endif

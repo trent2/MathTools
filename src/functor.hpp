@@ -3,7 +3,8 @@
 
 #include <cmath>
 #include <algorithm>
-#include <vector>
+#include <functional>
+#include <list>
 
 #include "functor_unary.hpp"
 
@@ -27,7 +28,7 @@ namespace functor {
   // prototypes for unary and binary functions
   class multivariate_function {
   public:
-    virtual double& operator()(const std::vector<double>&) = 0;
+    virtual double& operator()(const std::list<double>&) = 0;
     virtual ~multivariate_function() {}
     virtual void setStepsize(const double &ss) { __stepsize = ss; };
   protected:
@@ -41,8 +42,8 @@ namespace functor {
     uni_as_multivariate_function(unary_function *f) : _M_f(f) { }
     ~uni_as_multivariate_function()  { delete _M_f; }
 
-    double& operator()(const std::vector<double> &x)
-    { return __r = (*_M_f)(x[0]); }
+    double& operator()(const std::list<double> &x)
+    { return __r = (*_M_f)(x.front()); }
 
     void setStepsize(const double &ss) {
       __stepsize = ss;
@@ -105,14 +106,12 @@ namespace functor {
     };
 
     multivariate_function *_M_mvf;
-    std::vector<unary_function*> *_M_fs;
-    std::vector<double> _y;
-    unsigned int _i;
-    size_t _size;
+    std::list<unary_function*> *_M_fs;
+    std::list<double> _y;
+    std::list<unary_function*>::const_iterator _it;
 
   public:
-    composition(multivariate_function *mvf, std::vector<unary_function*> *fs) : _M_mvf(mvf), _M_fs(fs), _size(fs->size()),
-										_y(fs->size()) { }
+    composition(multivariate_function *mvf, std::list<unary_function*> *fs) : _M_mvf(mvf), _M_fs(fs), _y(fs->size()) { }
 
     inline ~composition() {
       transform(_M_fs->begin(), _M_fs->end(), _M_fs->begin(), Delete_ptr());
@@ -128,20 +127,19 @@ namespace functor {
 
     inline double& operator()(const double& __x)
     {
-      for(_i=0; _i<_size; ++_i)
-	_y[_i] = (*(*_M_fs)[_i])(__x);
+      transform(_M_fs->begin(), _M_fs->end(), _y.begin(), std::bind2nd(std::mem_fun(&unary_function::operator()), __x));
 
       return __r = (*_M_mvf)(_y);
     }
   };
 
   inline composition*
-  compose(multivariate_function* __mvf, std::vector<unary_function*> *__fs)
+  compose(multivariate_function* __mvf, std::list<unary_function*> *__fs)
   { return new composition(__mvf, __fs); }
 
   inline composition*
   compose1(unary_function* __f1, unary_function* __f2) {
-    std::vector<unary_function*> *v = new std::vector<unary_function*>;
+    std::list<unary_function*> *v = new std::list<unary_function*>;
     v->push_back(__f2);
     return new composition(new uni_as_multivariate_function(__f1), v);
   }
@@ -180,15 +178,14 @@ namespace functor {
   // binary arithmetic functors
   struct plus : public multivariate_function
   {
-    //      std::vector<double>::const_iterator _beg, _end;
+    //      std::list<double>::const_iterator _beg, _end;
     struct sum {
       double &_s;
       sum(double &r) : _s(r) { }
-      //	sum& operator=(sum &s) { _s = s._s; }
       void operator()(const double &d) { _s += d; }
     };
 
-    inline double& operator()(const std::vector<double> &x)
+    inline double& operator()(const std::list<double> &x)
     {
       //	__r = 0;
       //	_end = x.end();
@@ -202,25 +199,28 @@ namespace functor {
 
   struct minus : public multivariate_function
   {
-    inline double& operator()(const std::vector<double> &x)
+    struct dif {
+      double &_d;
+      dif(double &r) : _d(r) { }
+      void operator()(const double &d) { _d -= d; }
+    };
+    inline double& operator()(const std::list<double> &x)
     {
-      double d = 1;
+      __r = 0;
 
-      if(x.size()) {
-	d = x[x.size()-1];
-	for(int i=x.size()-2; i>=0; --i)
-	  d -= x[i];
+      if(!x.empty()) {
+	dif d(__r = 2*x.back());
+	for_each(x.begin(), x.end(), d);
       }
-
-      return __r = d;
+      return __r;
     }
   };
 
   struct multiplies : public multivariate_function
   {
-    std::vector<double>::const_iterator _beg, _end;
+    std::list<double>::const_iterator _beg, _end;
 
-    inline double& operator()(const std::vector<double> &x)
+    inline double& operator()(const std::list<double> &x)
     {
       __r = 1;
       _end = x.end();
@@ -231,25 +231,29 @@ namespace functor {
 
   struct divides : public multivariate_function
   {
-    inline double& operator()(const std::vector<double> &x)
+    struct quo {
+      double &_q;
+      quo(double &r) : _q(r) { }
+      void operator()(const double &d) { _q /= d; }
+    };
+    inline double& operator()(const std::list<double> &x)
     {
       __r = 1;
 
-      if(x.size()) {
-	__r = x[x.size()-1];
-	for(int i=x.size()-2; i>=0; --i)
-	  __r /= x[i];
+      if(!x.empty()) {
+	quo q(__r = x.back()*x.back());
+	for_each(x.begin(), x.end(), q);
       }
-
       return __r;
     }
   };
 
   struct powers : public multivariate_function
   {
-    inline double& operator()(const std::vector<double> &x)
+    inline double& operator()(const std::list<double> &x)
     {
-      return __r = std::pow(x[1], x[0]);
+      
+      return __r = std::pow(x.back(), x.front());
     }
   };
 }

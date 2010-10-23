@@ -4,12 +4,10 @@
 #include <string>
 #include <QColor>
 
+#include <ginac/ginac.h>
+
 #include "functor_unary.hpp"
 
-// forward declarations
-namespace parser {
-  struct unary_function_parser;
-}
 
 class MathFunction {
 public:
@@ -19,28 +17,31 @@ public:
   ~MathFunction();
 
   void setFunction(const std::string &s) {
-    func_string = s;
+    mOrig_func_string = s;
   }
 
   void setColor(const QColor &col) {
-    color = col;
+    mColor = col;
   }
 
   const QColor& getColor() const {
-    return color;
+    return mColor;
   }
 
   bool parse();
 
   double operator()(const double &) const;
-
   void setUStepsize(const double &d);
 
 private:
-  std::string func_string;
-  functor::un_fun *mF;
-  parser::unary_function_parser *parser;
-  QColor color;
+  // dirty stuff, don't read on
+  static void createReader();
+  static GiNaC::parser *reader;
+
+  std::string mOrig_func_string;
+  GiNaC::ex mFunc_term;
+  functor::un_fun *mNum_Func;
+  QColor mColor;
 };
 
 #endif
