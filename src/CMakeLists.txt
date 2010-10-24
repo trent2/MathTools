@@ -6,17 +6,18 @@ set(MathTools_SRCS
   MathFunction.cpp
   main.cpp
   Plotter.cpp
-#  parser.cpp
-#  parser_helper.cpp
+  PlotTab.cpp  
 )
 
 set(MathTools_MOC_HDRS
   MathTools.hpp
+  PlotTab.hpp
   Plotter.hpp
 )
 
 set(MathTools_UIS
-  mathtools.ui
+  mathtoolsmain.ui
+  plottab.ui
 )
 
 add_subdirectory(qtcolorcombobox)

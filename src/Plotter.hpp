@@ -22,26 +22,27 @@ public:
   void update();
   MathFunction& getFunction(int index);
 
+  // minimum and maximum of real view window
+  double xmin, xmax, ymin, ymax;
+  // tick-lenght for axis ticks
+  double xticks, yticks;
+  // compute x- and y-ticks automatically
+  bool compAutoXTicks, compAutoYTicks;
+  // draw grid
+  bool drawGrid;
 protected:  // all these methods are overwritten
   void paintEvent(QPaintEvent *);
   void mouseMoveEvent(QMouseEvent *);
   void mousePressEvent(QMouseEvent *);
+  void mouseReleaseEvent(QMouseEvent *);
   void wheelEvent(QWheelEvent *);
 
 private:
-  // minimum and maximum of real view window
-  double xmin, xmax, ymin, ymax;
   int winwidth, winheight;
 
   static const int tickPixelDistForAuto = 20;
   static const int descAutoPixelDist = 100;
   static const double zoomFactor = 1.2;
-
-  // compute x- and y-ticks automatically
-  bool compAutoXTicks, compAutoYTicks;
-
-  // draw grid
-  bool drawGrid;
 
   // flag to determine whether to draw vertical lines
   bool verticalCorrection;
@@ -51,8 +52,6 @@ private:
   // modifiers hit when mouse was pressed
   unsigned int key_mod;
 
-  // tick-lenght for axis ticks
-  double xticks, yticks;
   // distance between number label on axes
   double descDistX, descDistY;
 
@@ -73,6 +72,7 @@ private:
 
   void plotGrid(QPainter&);
   void computeCSParameters();
+  double normalizeTickValue(double) const;
 
   // set (x,y) as the center of the cs
   void setCenter(double x, double y);
@@ -84,20 +84,6 @@ private:
   void zoomToCenter(int, int, double f);
 
 public slots:
-  void setXMin(double xmin);
-  void setXMax(double xmax);
-  void setYMin(double ymin);
-  void setYMax(double ymax);
-
-  void setXTicks(double xticks);
-  void setYTicks(double yticks);
-  void autoXTicks(bool);
-  void autoYTicks(bool);
-  void toggleGrid(bool);
-
-  void setStandardWindow();
-
-  void f1ToFile();
   void setVerticalCorrection(bool v) { verticalCorrection = v; }
 
 signals:

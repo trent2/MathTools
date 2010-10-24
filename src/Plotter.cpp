@@ -1,6 +1,7 @@
 #include <vector>
+#include <limits>
 #include <cmath>
-#include <fstream>
+#include <algorithm>
 
 #include <QtGui/QFrame>
 #include <QtGui/QPaintEvent>
@@ -14,9 +15,8 @@
 Plotter::Plotter(QWidget *parent) : QFrame(parent),
 				    xmin(-10), xmax(10), ymin(-10), ymax(10), xticks(1), yticks(1),
 				    compAutoXTicks(false), compAutoYTicks(false), drawGrid(false),
-				    leftPressed(false), verticalCorrection(true) {
-  // test code: generate a test function
-  
+				    verticalCorrection(true), leftPressed(false) {
+  setCursor(Qt::OpenHandCursor);
   mfunc.push_back(std::string(""));
   mfunc.push_back(std::string(""));
   mfunc.push_back(std::string(""));
@@ -65,15 +65,15 @@ void Plotter::paintEvent(QPaintEvent *) {
 	if(!x)
 	  yold = y;
 	
-	if(verticalCorrection && std::abs(y-yold)>2*(ymax-ymin) ||
+	if((verticalCorrection && std::abs(y-yold)>2*(ymax-ymin)) ||
 	   std::isnan(y) || std::isinf(y))
 	  nextIsMove = true;
 	else
 	  if(nextIsMove) {
-	    pathstroke.moveTo(x, winheight-roundi((y-ymin)*ystep));
+	    pathstroke.moveTo(x, winheight-calc::roundi((y-ymin)*ystep));
 	    nextIsMove = false;
 	  } else {
-	    pathstroke.lineTo(x, winheight-roundi((y-ymin)*ystep));
+	    pathstroke.lineTo(x, winheight-calc::roundi((y-ymin)*ystep));
 	  }
 	yold = y;
       }
@@ -84,53 +84,60 @@ void Plotter::paintEvent(QPaintEvent *) {
 void Plotter::plotGrid(QPainter &p) {
   double tick;
   const double
-    xtop = (drawGrid ? winwidth : roundi(-xmin*xstep)+3),
-    xbot = (drawGrid ? 0 : roundi(-xmin*xstep)-3),
-    ytop = (drawGrid ? 0 : winheight-roundi(-ymin*ystep)-3),
-    ybot = (drawGrid ? winheight : winheight-roundi(-ymin*ystep)+3);
+    xtop = (drawGrid ? winwidth : calc::roundi(-xmin*xstep)+3),
+    xbot = (drawGrid ? 0 : calc::roundi(-xmin*xstep)-3),
+    ytop = (drawGrid ? 0 : winheight-calc::roundi(-ymin*ystep)-3),
+    ybot = (drawGrid ? winheight : winheight-calc::roundi(-ymin*ystep)+3);
 
   
   // is there a y-axis?
-  if(xbot>=0 && xtop<=winwidth || drawGrid) {
+  if((xbot>=0 && xtop<=winwidth) || drawGrid) {
     tick = std::floor(ymin/yticks)*yticks;
 
     if(drawGrid)
       p.setPen(Qt::DashLine);
     // draw tick marks
     while(tick <= ymax) {
-      p.drawLine(max(0,xbot), winheight-roundi((tick-ymin)*ystep), min(winwidth, xtop), winheight-roundi((tick-ymin)*ystep));
+      p.drawLine(std::max(0.0,xbot), winheight-calc::roundi((tick-ymin)*ystep),
+		 std::min((double)winwidth, xtop), winheight-calc::roundi((tick-ymin)*ystep));
       tick += yticks;
     }
 
     tick = std::floor(ymin/descDistY)*descDistY;
     // draw numbers
     while(tick <= ymax) {
-      p.drawText(roundi(-xmin*xstep)-15, winheight-roundi((tick-ymin)*ystep)+5, QString::number(tick, 'g', 2));
+      if(std::abs(tick) < 3*std::numeric_limits<double>::epsilon())
+	tick = 0;
+      if(tick)
+	p.drawText(calc::roundi(-xmin*xstep)-15, winheight-calc::roundi((tick-ymin)*ystep)+5, QString::number(tick, 'g', 2));
       tick += descDistY;
     }
     p.setPen(Qt::SolidLine);
 
     // draw axis
     if(xbot>=0 && xtop<=winwidth)
-       p.drawLine(roundi(-xmin*xstep), 0, roundi(-xmin*xstep), winheight);
+       p.drawLine(calc::roundi(-xmin*xstep), 0, calc::roundi(-xmin*xstep), winheight);
   }
 
   // is there an x-axis?
-  if(ybot>=0 && ytop <=winheight || drawGrid) {
+  if((ybot>=0 && ytop <=winheight) || drawGrid) {
     tick = std::floor(xmin/xticks)*xticks;
 
     if(drawGrid)
       p.setPen(Qt::DashLine);
     // draw tick marks
     while(tick <= xmax) {
-      p.drawLine(roundi((tick-xmin)*xstep), min(winheight,ybot), roundi((tick-xmin)*xstep), max(0,ytop));
+      p.drawLine(calc::roundi((tick-xmin)*xstep), std::min((double)winheight,ybot),
+		 calc::roundi((tick-xmin)*xstep), std::max(0.0,ytop));
       tick += xticks;
     }
 
     tick = std::floor(xmin/descDistX)*descDistX;
     // draw numbers
     while(tick <= xmax) {
-      p.drawText(roundi((tick-xmin)*xstep)-7, winheight-roundi(-ymin*ystep)+20, QString::number(tick, 'g', 2));
+      if(std::abs(tick) < 3*std::numeric_limits<double>::epsilon())
+	tick = 0;
+      p.drawText(calc::roundi((tick-xmin)*xstep)-7, winheight-calc::roundi(-ymin*ystep)+20, QString::number(tick, 'g', 2));
       tick += descDistX;
     }
 
@@ -138,7 +145,7 @@ void Plotter::plotGrid(QPainter &p) {
     // draw axis
 
     if(ybot>=0 && ytop <=winheight)
-      p.drawLine(0, winheight-roundi(-ymin*ystep), winwidth, winheight-roundi(-ymin*ystep));
+      p.drawLine(0, winheight-calc::roundi(-ymin*ystep), winwidth, winheight-calc::roundi(-ymin*ystep));
   }
 }
 
@@ -150,12 +157,12 @@ void Plotter::computeCSParameters() {
   ystep = winheight/(ymax-ymin);
   if(compAutoXTicks) {
     xticks = (xmax-xmin)*((double)tickPixelDistForAuto)/winwidth;
-    xticks = round(xticks*2)/2;
+    xticks = normalizeTickValue(xticks);
     emit newXTicks(xticks);
   }
   if(compAutoYTicks) {
     yticks = (ymax-ymin)*((double)tickPixelDistForAuto)/winheight;
-    yticks = round(yticks*2)/2;
+    yticks = normalizeTickValue(yticks);
     emit newYTicks(yticks);
   }
 
@@ -171,6 +178,22 @@ void Plotter::computeCSParameters() {
     descDistY = yticks;
   else
     descDistY = std::ceil(descDistY/yticks)*yticks;
+}
+
+double Plotter::normalizeTickValue(double tick) const {
+  // only use positive tick value
+  if(tick>0) {
+    if(tick>0.5)
+      tick = calc::round(tick*2)/2;
+    else {
+      int power = -std::floor(std::log(tick)/std::log(10));
+      if(power <= 4)
+	tick = calc::roundi(std::pow(10,power)*tick)*std::pow(10.0,-power);
+      else
+	tick = 1e-4;
+    }
+  }
+  return tick;
 }
 
 void Plotter::setCenter(double x, double y) {
@@ -248,12 +271,14 @@ void Plotter::mousePressEvent(QMouseEvent *e) {
 
   if(e->button() == Qt::LeftButton) {
     leftPressed = true;
+    setCursor(Qt::ClosedHandCursor);
     old_vals.anchorMX = (xmax+xmin)/2;
     old_vals.anchorMY = (ymax+ymin)/2;
     old_vals.anchorWX = e->x();
     old_vals.anchorWY = e->y();
 
     if(key_mod == Qt::ShiftModifier) {
+      setCursor(Qt::SizeAllCursor);
       old_vals.xmin = xmin;
       old_vals.xmax = xmax;
       old_vals.ymin = ymin;
@@ -262,103 +287,20 @@ void Plotter::mousePressEvent(QMouseEvent *e) {
   }
 }
 
+void Plotter::mouseReleaseEvent(QMouseEvent*) {
+  setCursor(Qt::OpenHandCursor);
+}
+
 void Plotter::mouseMoveEvent(QMouseEvent *e) {
   int dx = e->x() - old_vals.anchorWX, dy = old_vals.anchorWY - e->y();
 
+
   if(leftPressed)
     switch(key_mod) {
-    case Qt::NoModifier    : setCenter(old_vals.anchorMX - dx/xstep, old_vals.anchorMY - dy/ystep); break;
-    case Qt::ShiftModifier : resizeAxes(dx/xstep, dy/ystep);break;
+    case Qt::NoModifier :
+      setCenter(old_vals.anchorMX - dx/xstep, old_vals.anchorMY - dy/ystep); break;
+    case Qt::ShiftModifier :
+      resizeAxes(dx/xstep, dy/ystep);break;
     default: break;
     }
-}
-
-/** Slots **/
-
-void Plotter::setXMin(double xmin) {
-  this->xmin = xmin;
-  if(xmax<xmin) {
-    xmax = xmin+.5;
-    emit newXMax(xmax);
-  }
-  emit newXMin(xmin);
-  update();
-}
-
-void Plotter::setXMax(double xmax) {
-  this->xmax = xmax;
-  if(xmax<xmin) {
-    xmin = xmax-.5;
-    emit newXMin(xmin);
-  }
-  emit newXMax(xmax);
-  update();
-}
-
-void Plotter::setYMin(double ymin) {
-  this->ymin = ymin;
-  if(ymax<ymin) {
-    ymax = ymin+.5;
-    emit newYMax(ymax);
-  }
-  emit newYMin(ymin);
-  update();
-}
-
-void Plotter::setYMax(double ymax) {
-  this->ymax = ymax;
-  if(ymax<ymin) {
-    ymin = ymax-.5;
-    emit newYMin(ymin);
-  }
-  emit newYMax(ymax);
-  update();
-}
-
-void Plotter::setXTicks(double xticks) {
-  this->xticks = xticks;
-  update();
-}
-
-void Plotter::setYTicks(double yticks) {
-  this->yticks = yticks;
-  update();
-}
-
-void Plotter::autoXTicks(bool b) {
-  compAutoXTicks = b;
-  update();
-}
-
-void Plotter::autoYTicks(bool b) {
-  compAutoYTicks = b;
-  update();
-}
-
-void Plotter::toggleGrid(bool b) {
-  drawGrid = b;
-  update();
-}
-
-void Plotter::setStandardWindow() {
-  xmin = -10;
-  xmax = 10;
-  ymin = -10;
-  ymax = 10;
-  emit newXMin(xmin);
-  emit newXMax(xmax);
-  emit newYMin(ymin);
-  emit newYMax(ymax);
-}
-
-void Plotter::f1ToFile() {
-  std::ofstream debug_file;
-  debug_file.open("f1_vals.txt");
-
-  for(int x=0; x<=winwidth; ++x) {
-    debug_file << "(" << xmin+x/xstep << ", " << mfunc[0](xmin+x/xstep) << ") ";
-    if(!(x%5))
-      debug_file << std::endl;
-  }
-  debug_file.close();
 }

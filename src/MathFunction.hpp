@@ -2,7 +2,7 @@
 #define __MATH_FUNCTION_HPP__
 
 #include <string>
-#include <QColor>
+#include <QtGui/QColor>
 
 #include <ginac/ginac.h>
 
