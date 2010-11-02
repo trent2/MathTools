@@ -10,6 +10,7 @@ class QMouseEvent;
 class QWheelEvent;
 class QFrame;
 class QPainter;
+class QPaintDevice;
 
 class Plotter : public QFrame {
 
@@ -21,7 +22,13 @@ public:
 
   void update();
   MathFunction& getFunction(int index);
+  void paintIt(QPaintDevice*) const;
 
+  void setXTicks(double xt) { xticks = xt; }
+  void setYTicks(double yt) { yticks = yt; }
+
+
+  // some variables which really should be private
   // minimum and maximum of real view window
   double xmin, xmax, ymin, ymax;
   // tick-lenght for axis ticks
@@ -30,6 +37,7 @@ public:
   bool compAutoXTicks, compAutoYTicks;
   // draw grid
   bool drawGrid;
+
 protected:  // all these methods are overwritten
   void paintEvent(QPaintEvent *);
   void mouseMoveEvent(QMouseEvent *);
@@ -38,11 +46,9 @@ protected:  // all these methods are overwritten
   void wheelEvent(QWheelEvent *);
 
 private:
-  int winwidth, winheight;
-
-  static const int tickPixelDistForAuto = 20;
-  static const int descAutoPixelDist = 100;
-  static const double zoomFactor = 1.2;
+  static const int tickPixelDistForAuto;
+  static const int descAutoPixelDist;
+  static const double zoomFactor;
 
   // flag to determine whether to draw vertical lines
   bool verticalCorrection;
@@ -51,12 +57,6 @@ private:
   bool leftPressed;
   // modifiers hit when mouse was pressed
   unsigned int key_mod;
-
-  // distance between number label on axes
-  double descDistX, descDistY;
-
-  // pixels per unit
-  double xstep, ystep;
 
   // old values for tracking resize and move operations
   struct old_vals_t {
@@ -67,11 +67,19 @@ private:
     int anchorWX, anchorWY;
   } old_vals;
 
+  struct cs_params {
+    int winwidth, winheight;
+    // pixels per unit
+    double xstep, ystep;
+    // distance between number label on axes
+    double descDistX, descDistY;
+  } screen_params;
 
   std::vector<MathFunction> mfunc;
 
-  void plotGrid(QPainter&);
-  void computeCSParameters();
+  void plotGrid(QPainter&, const cs_params&) const;
+  void computeAutoTicks();
+  cs_params computeCSParameters(const QPaintDevice*) const;
   double normalizeTickValue(double) const;
 
   // set (x,y) as the center of the cs

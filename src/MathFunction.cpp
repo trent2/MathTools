@@ -8,11 +8,7 @@
 
 using namespace functor;
 
-MathFunction::MathFunction(const QColor &col) : mOrig_func_string(""), mNum_Func(0), mColor(col) {
-  createReader();
-}
-
-MathFunction::MathFunction(const std::string &s, const QColor &col) : mOrig_func_string(s), mNum_Func(0), mColor(col) {
+MathFunction::MathFunction(const std::string &s, const QColor &col) : mOrig_func_string(s), mNum_Func(0), mColor(col), mParseOk(false) {
   createReader();
   parse();
 }
@@ -21,25 +17,18 @@ MathFunction::~MathFunction() {
   delete mNum_Func;
 }
 
-bool MathFunction::parse() {
-  bool ret = true;
-  try {
-    mFunc_term = (*reader)(mOrig_func_string);
-    mNum_Func = numeric_function_builder::create_func(mFunc_term);
-  } catch (std::invalid_argument& err) {
-    ret = false;
-  }
+void MathFunction::setFunction(const std::string &s) {
+  mOrig_func_string = s;
+  parse();
+}
 
-  return ret;
+double MathFunction::operator()(const double &d) const {
+  return (*mNum_Func)(d);
 }
 
 void MathFunction::setUStepsize(const double &d) {
   if(mNum_Func)
     mNum_Func->setStepsize(d);
-}
-
-double MathFunction::operator()(const double &d) const {
-  return (*mNum_Func)(d);
 }
 
 // a GiNaC parser
@@ -53,5 +42,15 @@ void MathFunction::createReader() {
     (*table)["e"] = symb_e;
     reader = new GiNaC::parser(*table);
     reader->strict = true;
+  }
+}
+
+void MathFunction::parse() {
+  mParseOk = true;
+  try {
+    mFunc_term = (*reader)(mOrig_func_string);
+    mNum_Func = numeric_function_builder::create_func(mFunc_term);
+  } catch (std::invalid_argument& err) {
+    mParseOk = false;
   }
 }

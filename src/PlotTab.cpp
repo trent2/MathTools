@@ -1,3 +1,5 @@
+#include <QPrinter>
+
 #include "PlotTab.hpp"
 #include "MathFunction.hpp"
 
@@ -100,12 +102,12 @@ void PlotTab::on_ymaxDSpinBox_valueChanged(double ymax) {
 }
 
 void PlotTab::on_xticksDSpinBox_valueChanged(double xticks) {
-  plotter->xticks = xticks;
+  plotter->setXTicks(xticks);
   plotter->update();
 }
 
 void PlotTab::on_yticksDSpinBox_valueChanged(double yticks) {
-  plotter->yticks = yticks;
+  plotter->setYTicks(yticks);
   plotter->update();
 }
 
@@ -153,4 +155,11 @@ void PlotTab::on_plotter_newXTicks(double xticks) {
 
 void PlotTab::on_plotter_newYTicks(double yticks) {
   yticksDSpinBox->setValue(yticks);
+}
+
+void PlotTab::on_exportPushButton_clicked() {
+  QPrinter printer; // (QPrinter::HighResolution);
+  printer.setOutputFormat(QPrinter::PdfFormat);
+  printer.setOutputFileName("test.pdf");
+  plotter->paintIt(&printer);
 }

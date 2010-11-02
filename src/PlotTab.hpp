@@ -31,15 +31,20 @@ private slots:  // slots are auto-connected
   void on_yAutoCheckBox_toggled(bool);
   void on_gridCheckBox_toggled(bool);
 
+  // zoom to standard
   void on_standardPushButton_clicked();
 
+  // changes to plotting window by moving or resizing
   void on_plotter_newXMin(double);
   void on_plotter_newXMax(double);
   void on_plotter_newYMin(double);
   void on_plotter_newYMax(double);
 
+  // new ticks from auto tick
   void on_plotter_newXTicks(double);
   void on_plotter_newYTicks(double);
 
+  // export to pdf
+  void on_exportPushButton_clicked();
 };
 #endif
