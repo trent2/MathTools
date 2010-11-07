@@ -2,6 +2,7 @@
 #define _PLOTTER_HPP_
 
 #include <QtGui/QFrame>
+#include <QtGui/QPainter>
 
 // classes defined elsewhere
 class MathFunction;
@@ -9,7 +10,6 @@ class QPaintEvent;
 class QMouseEvent;
 class QWheelEvent;
 class QFrame;
-class QPainter;
 class QPaintDevice;
 
 class Plotter : public QFrame {
@@ -22,21 +22,20 @@ public:
 
   void update();
   MathFunction& getFunction(int index);
-  void paintIt(QPaintDevice*) const;
+  void paintIt(QPaintDevice*, QPainter::RenderHints=0) const;
 
-  void setXTicks(double xt) { xticks = xt; }
-  void setYTicks(double yt) { yticks = yt; }
+  void setXMin(double xm) { xmin = xm; newXMin(xm); }
+  void setXMax(double xm) { xmax = xm; newXMax(xm); }
+  void setYMin(double ym) { ymin = ym; newYMin(ym); }
+  void setYMax(double ym) { ymax = ym; newYMax(ym); }
+  void setXTicks(double xt) { xticks = xt; newXTicks(xt); }
+  void setYTicks(double yt) { yticks = yt; newYTicks(yt); }
 
 
-  // some variables which really should be private
-  // minimum and maximum of real view window
-  double xmin, xmax, ymin, ymax;
-  // tick-lenght for axis ticks
-  double xticks, yticks;
   // compute x- and y-ticks automatically
   bool compAutoXTicks, compAutoYTicks;
   // draw grid
-  bool drawGrid;
+  bool drawGridX, drawGridY;
 
 protected:  // all these methods are overwritten
   void paintEvent(QPaintEvent *);
@@ -49,6 +48,11 @@ private:
   static const int tickPixelDistForAuto;
   static const int descAutoPixelDist;
   static const double zoomFactor;
+
+  // minimum and maximum of real view window
+  double xmin, xmax, ymin, ymax;
+  // tick-lenght for axis ticks
+  double xticks, yticks;
 
   // flag to determine whether to draw vertical lines
   bool verticalCorrection;
@@ -77,7 +81,7 @@ private:
 
   std::vector<MathFunction> mfunc;
 
-  void plotGrid(QPainter&, const cs_params&) const;
+  void plotGrid(QPainter&, const cs_params&, qreal) const;
   void computeAutoTicks();
   cs_params computeCSParameters(const QPaintDevice*) const;
   double normalizeTickValue(double) const;

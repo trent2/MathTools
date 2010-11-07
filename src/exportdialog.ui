@@ -1,34 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>Dialog</class>
- <widget class="QDialog" name="Dialog">
-  <property name="windowModality">
-   <enum>Qt::ApplicationModal</enum>
-  </property>
+ <class>ExportDialog</class>
+ <widget class="QDialog" name="ExportDialog">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>402</width>
-    <height>238</height>
+    <width>397</width>
+    <height>175</height>
    </rect>
-  </property>
-  <property name="minimumSize">
-   <size>
-    <width>402</width>
-    <height>238</height>
-   </size>
-  </property>
-  <property name="maximumSize">
-   <size>
-    <width>402</width>
-    <height>238</height>
-   </size>
   </property>
   <property name="windowTitle">
    <string>Export to...</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
+   <property name="sizeConstraint">
+    <enum>QLayout::SetFixedSize</enum>
+   </property>
    <item row="0" column="0" colspan="2">
     <widget class="QLabel" name="outputFormatLabel">
      <property name="text">
@@ -64,7 +52,14 @@
     </widget>
    </item>
    <item row="1" column="2">
-    <widget class="QDoubleSpinBox" name="widthSpinBox"/>
+    <widget class="QDoubleSpinBox" name="widthSpinBox">
+     <property name="minimum">
+      <double>0.010000000000000</double>
+     </property>
+     <property name="maximum">
+      <double>400.000000000000000</double>
+     </property>
+    </widget>
    </item>
    <item row="2" column="0">
     <widget class="QLabel" name="heightLabel">
@@ -77,13 +72,20 @@
     </widget>
    </item>
    <item row="2" column="2">
-    <widget class="QDoubleSpinBox" name="heightSpinBox"/>
+    <widget class="QDoubleSpinBox" name="heightSpinBox">
+     <property name="minimum">
+      <double>0.010000000000000</double>
+     </property>
+     <property name="maximum">
+      <double>400.000000000000000</double>
+     </property>
+    </widget>
    </item>
    <item row="2" column="3">
     <widget class="QComboBox" name="measureComboBox">
      <item>
       <property name="text">
-       <string>mm</string>
+       <string>cm</string>
       </property>
      </item>
      <item>
@@ -91,25 +93,20 @@
        <string>in</string>
       </property>
      </item>
-     <item>
-      <property name="text">
-       <string>pixel</string>
-      </property>
-     </item>
     </widget>
    </item>
    <item row="3" column="0" colspan="2">
-    <widget class="QLabel" name="resXLabel">
+    <widget class="QLabel" name="resLabel">
      <property name="text">
-      <string>Resolution X</string>
+      <string>Resolution</string>
      </property>
      <property name="buddy">
-      <cstring>resXHSlider</cstring>
+      <cstring>resHSlider</cstring>
      </property>
     </widget>
    </item>
    <item row="3" column="2" colspan="3">
-    <widget class="QSlider" name="resXHSlider">
+    <widget class="QSlider" name="resHSlider">
      <property name="minimum">
       <number>30</number>
      </property>
@@ -125,7 +122,7 @@
     </widget>
    </item>
    <item row="3" column="5">
-    <widget class="QSpinBox" name="resXSpinBox">
+    <widget class="QSpinBox" name="resSpinBox">
      <property name="minimum">
       <number>30</number>
      </property>
@@ -138,7 +135,7 @@
     </widget>
    </item>
    <item row="3" column="6">
-    <widget class="QComboBox" name="esXRatioComboBox">
+    <widget class="QComboBox" name="resRatioComboBox">
      <item>
       <property name="text">
        <string>px / in</string>
@@ -151,186 +148,91 @@
      </item>
     </widget>
    </item>
-   <item row="4" column="0" colspan="2">
-    <widget class="QLabel" name="resYLabel">
-     <property name="text">
-      <string>Resolution Y</string>
-     </property>
-     <property name="buddy">
-      <cstring>resYHSlider</cstring>
-     </property>
-    </widget>
-   </item>
-   <item row="4" column="2" colspan="3">
-    <widget class="QSlider" name="resYHSlider">
-     <property name="minimum">
-      <number>30</number>
-     </property>
-     <property name="maximum">
-      <number>1200</number>
-     </property>
-     <property name="value">
-      <number>72</number>
-     </property>
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-    </widget>
-   </item>
-   <item row="4" column="5">
-    <widget class="QSpinBox" name="resYSpinBox">
-     <property name="minimum">
-      <number>30</number>
-     </property>
-     <property name="maximum">
-      <number>1200</number>
-     </property>
-     <property name="value">
-      <number>72</number>
-     </property>
-    </widget>
-   </item>
-   <item row="4" column="6">
-    <widget class="QComboBox" name="resYRatioComboBox">
-     <item>
-      <property name="text">
-       <string>px / in</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>px / cm</string>
-      </property>
-     </item>
-    </widget>
-   </item>
-   <item row="5" column="0">
-    <widget class="QLabel" name="filenameLabel">
-     <property name="text">
-      <string>Filename</string>
-     </property>
-     <property name="buddy">
-      <cstring>filenameLineEdit</cstring>
-     </property>
-    </widget>
-   </item>
-   <item row="5" column="1" colspan="5">
-    <widget class="QLineEdit" name="filenameLineEdit"/>
-   </item>
-   <item row="6" column="0" colspan="7">
+   <item row="4" column="0" colspan="7">
     <widget class="QDialogButtonBox" name="buttonBox">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
      </property>
      <property name="standardButtons">
-      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
-     </property>
-    </widget>
-   </item>
-   <item row="5" column="6">
-    <widget class="QPushButton" name="fileDialogPushButton">
-     <property name="text">
-      <string>...</string>
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Save</set>
      </property>
     </widget>
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>outputFormatComboBox</tabstop>
+  <tabstop>widthSpinBox</tabstop>
+  <tabstop>heightSpinBox</tabstop>
+  <tabstop>measureComboBox</tabstop>
+  <tabstop>resHSlider</tabstop>
+  <tabstop>resSpinBox</tabstop>
+  <tabstop>resRatioComboBox</tabstop>
+  <tabstop>buttonBox</tabstop>
+ </tabstops>
  <resources/>
  <connections>
   <connection>
    <sender>buttonBox</sender>
    <signal>accepted()</signal>
-   <receiver>Dialog</receiver>
+   <receiver>ExportDialog</receiver>
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>248</x>
-     <y>284</y>
+     <x>266</x>
+     <y>190</y>
     </hint>
     <hint type="destinationlabel">
      <x>157</x>
-     <y>274</y>
+     <y>206</y>
     </hint>
    </hints>
   </connection>
   <connection>
    <sender>buttonBox</sender>
    <signal>rejected()</signal>
-   <receiver>Dialog</receiver>
+   <receiver>ExportDialog</receiver>
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>316</x>
-     <y>290</y>
+     <x>334</x>
+     <y>190</y>
     </hint>
     <hint type="destinationlabel">
      <x>286</x>
-     <y>274</y>
+     <y>206</y>
     </hint>
    </hints>
   </connection>
   <connection>
-   <sender>resXHSlider</sender>
+   <sender>resHSlider</sender>
    <signal>valueChanged(int)</signal>
-   <receiver>resXSpinBox</receiver>
+   <receiver>resSpinBox</receiver>
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>305</x>
-     <y>150</y>
+     <x>241</x>
+     <y>141</y>
     </hint>
     <hint type="destinationlabel">
-     <x>342</x>
-     <y>150</y>
+     <x>306</x>
+     <y>126</y>
     </hint>
    </hints>
   </connection>
   <connection>
-   <sender>resXSpinBox</sender>
+   <sender>resSpinBox</sender>
    <signal>valueChanged(int)</signal>
-   <receiver>resXHSlider</receiver>
+   <receiver>resHSlider</receiver>
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>355</x>
-     <y>149</y>
+     <x>306</x>
+     <y>126</y>
     </hint>
     <hint type="destinationlabel">
-     <x>297</x>
-     <y>146</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>resYHSlider</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>resYSpinBox</receiver>
-   <slot>setValue(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>243</x>
-     <y>174</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>367</x>
-     <y>183</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>resYSpinBox</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>resYHSlider</receiver>
-   <slot>setValue(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>339</x>
-     <y>174</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>269</x>
-     <y>178</y>
+     <x>241</x>
+     <y>141</y>
     </hint>
    </hints>
   </connection>

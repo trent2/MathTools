@@ -1,5 +1,7 @@
 #ifndef _PLOT_TAB_HPP_
 #define _PLOT_TAB_HPP_
+#include <QPrinter>
+
 #include "ui_plottab.h"
 
 class PlotTab : public QWidget, private Ui::PlotForm {
@@ -29,8 +31,9 @@ private slots:  // slots are auto-connected
   void on_yticksDSpinBox_valueChanged(double);
   void on_xAutoCheckBox_toggled(bool);
   void on_yAutoCheckBox_toggled(bool);
-  void on_gridCheckBox_toggled(bool);
-
+  void on_gridXCheckBox_toggled(bool);
+  void on_gridYCheckBox_toggled(bool);
+  void on_gridBothCheckBox_toggled(bool);
   // zoom to standard
   void on_standardPushButton_clicked();
 
@@ -46,5 +49,8 @@ private slots:  // slots are auto-connected
 
   // export to pdf
   void on_exportPushButton_clicked();
+private:
+  void printPDF(const QString &, double, double, QPrinter::Unit, int) const;
+  void printPNG(const QString &, double, double, QPrinter::Unit, int) const;
 };
 #endif

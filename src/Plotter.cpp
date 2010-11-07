@@ -2,6 +2,8 @@
 #include <limits>
 #include <cmath>
 #include <algorithm>
+#include <sstream>
+#include <iomanip>
 
 #include <QtGui/QFrame>
 #include <QtGui/QPaintEvent>
@@ -11,6 +13,7 @@
 #include "Plotter.hpp"
 #include "MathFunction.hpp"
 #include "Calc.hpp"
+#include "PlotterHelper.hpp"
 
 const int Plotter::tickPixelDistForAuto = 50;
 const int Plotter::descAutoPixelDist = 100;
@@ -18,8 +21,8 @@ const double Plotter::zoomFactor = 1.2;
 
 
 Plotter::Plotter(QWidget *parent) : QFrame(parent),
+				    compAutoXTicks(false), compAutoYTicks(false), drawGridX(false), drawGridY(false),
 				    xmin(-10), xmax(10), ymin(-10), ymax(10), xticks(1), yticks(1),
-				    compAutoXTicks(false), compAutoYTicks(false), drawGrid(false),
 				    verticalCorrection(true), leftPressed(false) {
   setCursor(Qt::OpenHandCursor);
   mfunc.push_back(std::string(""));
@@ -51,11 +54,14 @@ void Plotter::paintEvent(QPaintEvent *) {
   paintIt(this);
 }
 
-void Plotter::paintIt(QPaintDevice *d) const {
+void Plotter::paintIt(QPaintDevice *d, QPainter::RenderHints hints) const {
   QPainter p(d);
 
+  p.setRenderHints(hints);
+
   bool nextIsMove;
-  double y, yold, yplot;
+  double y, yold, yplot, yplotold;
+  qreal res_factor = PlotHelp::getResFactor(p.device(), this);
 
   cs_params param;
   if(d != this)
@@ -68,9 +74,9 @@ void Plotter::paintIt(QPaintDevice *d) const {
 
   //  p.setRenderHint(QPainter::Antialiasing);
 
-  p.setPen(QPen(Qt::black, 1));
+  //  p.setPen(QPen(Qt::black, 1));
 
-  plotGrid(p, param);
+  plotGrid(p, param, res_factor);
 
   // draw functions
   for(int i=0; i<4; ++i)
@@ -79,7 +85,7 @@ void Plotter::paintIt(QPaintDevice *d) const {
       QPainterPath pathstroke;
       nextIsMove = true;
 
-      p.setPen(QPen(mfunc[i].getColor(), 2));
+      p.setPen(QPen(mfunc[i].getColor(), 2*res_factor));
 
       for(int x=0; x<=param.winwidth; ++x) {
 	// compute value of functions
@@ -88,16 +94,23 @@ void Plotter::paintIt(QPaintDevice *d) const {
 	  yold = y;
 
 	yplot = param.winheight-calc::roundi((y-ymin)*param.ystep);
-	if((verticalCorrection && std::abs(y-yold)>2*(ymax-ymin)) ||
-	   std::isnan(y) || std::isinf(y) || yplot<0 || yplot>param.winheight)
+	yplotold = param.winheight-calc::roundi((yold-ymin)*param.ystep);
+
+	// don't draw lines crossing the screen vertically; also don't draw to infinity or nan
+	if((verticalCorrection && (yplotold<0 || yplotold>param.winheight) && (yplot<0 || yplot>param.winheight)) ||
+	   std::isnan(y) || std::isinf(y))
 	  nextIsMove = true;
-	else
-	  if(nextIsMove) {
-	    pathstroke.moveTo(x, yplot);
-	    nextIsMove = false;
-	  } else {
-	    pathstroke.lineTo(x, yplot);
-	  }
+	else if(yplot<0)
+	  yplot = 0;
+	else if(yplot>param.winheight)
+	  yplot = param.winheight;
+
+	if(nextIsMove) {
+	  pathstroke.moveTo(x, yplot);
+	  nextIsMove = false;
+	} else {
+	  pathstroke.lineTo(x, yplot);
+	}
 	yold = y;
       }
       p.drawPath(pathstroke);
@@ -105,21 +118,30 @@ void Plotter::paintIt(QPaintDevice *d) const {
   p.end();
 }
 
-void Plotter::plotGrid(QPainter &p, const cs_params &param) const {
+void Plotter::plotGrid(QPainter &p, const cs_params &param, qreal res_factor) const {
   double tick;
-  const double
-    xtop = (drawGrid ? param.winwidth : calc::roundi(-xmin*param.xstep)+3),
-    xbot = (drawGrid ? 0 : calc::roundi(-xmin*param.xstep)-3),
-    ytop = (drawGrid ? 0 : param.winheight-calc::roundi(-ymin*param.ystep)-3),
-    ybot = (drawGrid ? param.winheight : param.winheight-calc::roundi(-ymin*param.ystep)+3);
+  QSize textSizeMax;
+  QFont myFont;
+  // QPen myPen;
+  QString number;
+  std::vector<QString> axisLabels;
+  std::ostringstream numberstream;
 
-  
+  myFont.setPointSize(12);
+  p.setFont(myFont);
+
+  const double
+    xtop = (drawGridY ? param.winwidth : calc::roundi(-xmin*param.xstep)+3),
+    xbot = (drawGridY ? 0 : calc::roundi(-xmin*param.xstep)-3),
+    ytop = (drawGridX ? 0 : param.winheight-calc::roundi(-ymin*param.ystep)-3),
+    ybot = (drawGridX ? param.winheight : param.winheight-calc::roundi(-ymin*param.ystep)+3);
+
   // is there a y-axis?
-  if((xbot>=0 && xtop<=param.winwidth) || drawGrid) {
+  if((xbot>=0 && xtop<=param.winwidth) || drawGridY) {
     tick = std::ceil(ymin/yticks)*yticks;
 
-    if(drawGrid)
-      p.setPen(Qt::DotLine);
+    if(drawGridY)
+      p.setPen(QPen(Qt::black, 1*res_factor, Qt::DotLine));
     // draw tick marks/grid lines
     while(tick <= ymax) {
       p.drawLine(std::max(0.0,xbot), param.winheight-calc::roundi((tick-ymin)*param.ystep),
@@ -129,15 +151,17 @@ void Plotter::plotGrid(QPainter &p, const cs_params &param) const {
 
     tick = std::ceil(ymin/param.descDistY)*param.descDistY;
     // draw numbers
-    while(tick <= ymax) {
-      if(std::abs(tick) < 3*std::numeric_limits<double>::epsilon())
-	tick = 0;
-      if(tick)
-	p.drawText(calc::roundi(-xmin*param.xstep)-15, param.winheight-calc::roundi((tick-ymin)*param.ystep)+5,
-		   QString::number(tick, 'g', 2));
+    // determin maximum size needed for rendering axis-labels
+    QFontMetrics fm = p.fontMetrics();
+    PlotHelp::createAxisLabels(axisLabels, tick, std::floor(ymax/param.descDistY)*param.descDistY, param.descDistY,
+			       &textSizeMax, &fm, false);
+
+    for(uint i=0; i<axisLabels.size(); ++i) {
+      p.drawText(QRect(QPoint(calc::roundi(-xmin*param.xstep)+5, param.winheight-calc::roundi((tick-ymin)*param.ystep)-textSizeMax.height()/2),
+		       textSizeMax), Qt::AlignRight, axisLabels[i]);
       tick += param.descDistY;
     }
-    p.setPen(Qt::SolidLine);
+    p.setPen(QPen(Qt::black, 1*res_factor));
 
     // draw axis
     if(xbot>=0 && xtop<=param.winwidth)
@@ -145,11 +169,11 @@ void Plotter::plotGrid(QPainter &p, const cs_params &param) const {
   }
 
   // is there an x-axis?
-  if((ybot>=0 && ytop <=param.winheight) || drawGrid) {
+  if((ybot>=0 && ytop <=param.winheight) || drawGridX) {
     tick = std::ceil(xmin/xticks)*xticks;
 
-    if(drawGrid)
-      p.setPen(Qt::DotLine);
+    if(drawGridX)
+      p.setPen(QPen(Qt::black, 1*res_factor, Qt::DotLine));
     // draw tick marks/grid lines
     while(tick <= xmax) {
       p.drawLine(calc::roundi((tick-xmin)*param.xstep), std::min((double)param.winheight, ybot),
@@ -157,17 +181,18 @@ void Plotter::plotGrid(QPainter &p, const cs_params &param) const {
       tick += xticks;
     }
 
-    tick = std::floor(xmin/param.descDistX)*param.descDistX;
-    // draw numbers
-    while(tick <= xmax) {
-      if(std::abs(tick) < 3*std::numeric_limits<double>::epsilon())
-	tick = 0;
-      p.drawText(calc::roundi((tick-xmin)*param.xstep)-7, param.winheight-calc::roundi(-ymin*param.ystep)+20,
-		 QString::number(tick, 'g', 2));
+    tick = std::ceil(xmin/param.descDistX)*param.descDistX;
+    QFontMetrics fm = p.fontMetrics();
+    axisLabels.clear();
+    PlotHelp::createAxisLabels(axisLabels, tick, std::floor(xmax/param.descDistX)*param.descDistX, param.descDistX,
+			       &textSizeMax, &fm, true);
+    for(uint i=0; i<axisLabels.size(); ++i) {
+      p.drawText(QRect(QPoint(calc::roundi((tick-xmin)*param.xstep)-textSizeMax.width()/2, param.winheight-calc::roundi(-ymin*param.ystep)+5),
+		       textSizeMax), Qt::AlignRight, axisLabels[i]);
       tick += param.descDistX;
     }
 
-    p.setPen(Qt::SolidLine);
+    p.setPen(QPen(Qt::black, 1*res_factor));
     // draw axis
 
     if(ybot>=0 && ytop <= param.winheight)

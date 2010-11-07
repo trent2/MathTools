@@ -1,7 +1,11 @@
+#include <QFileDialog>
 #include <QPrinter>
+#include <QImage>
+#include <QSizeF>
 
 #include "PlotTab.hpp"
 #include "MathFunction.hpp"
+#include "ExportDialog.hpp"
 
 PlotTab::PlotTab(QWidget* parent) : QWidget(parent) {
   setupUi(this);
@@ -64,7 +68,7 @@ void PlotTab::on_xminDSpinBox_valueChanged(double xmin) {
     xmax = xmin+.5;
     xmaxDSpinBox->setValue(xmax);
   }
-  plotter->xmin = xmin;
+  plotter->setXMin(xmin);
   plotter->update();
 }
 
@@ -75,7 +79,7 @@ void PlotTab::on_xmaxDSpinBox_valueChanged(double xmax) {
     xmin = xmax-.5;
     xminDSpinBox->setValue(xmin);
   }
-  plotter->xmax = xmax;
+  plotter->setXMax(xmax);
   plotter->update();
 }
 
@@ -86,7 +90,7 @@ void PlotTab::on_yminDSpinBox_valueChanged(double ymin) {
     ymax = ymin+.5;
     ymaxDSpinBox->setValue(ymax);
   }
-  plotter->ymin = ymin;
+  plotter->setYMin(ymin);
   plotter->update();
 }
 
@@ -97,7 +101,7 @@ void PlotTab::on_ymaxDSpinBox_valueChanged(double ymax) {
     ymin = ymax-.5;
     yminDSpinBox->setValue(ymin);
   }
-  plotter->ymax = ymax;
+  plotter->setYMax(ymax);
   plotter->update();
 }
 
@@ -121,16 +125,33 @@ void PlotTab::on_yAutoCheckBox_toggled(bool b) {
   plotter->update();
 }
 
-void PlotTab::on_gridCheckBox_toggled(bool b) {
-  plotter->drawGrid = b;
+void PlotTab::on_gridXCheckBox_toggled(bool b) {
+  plotter->drawGridX = b;
+  if(!b)
+    gridBothCheckBox->setChecked(false);
+  plotter->update();
+}
+
+void PlotTab::on_gridYCheckBox_toggled(bool b) {
+  plotter->drawGridY = b;
+  if(!b)
+    gridBothCheckBox->setChecked(false);
+  plotter->update();
+}
+
+void PlotTab::on_gridBothCheckBox_toggled(bool b) {
+  if(b) {
+    gridXCheckBox->setChecked(true);
+    gridYCheckBox->setChecked(true);
+  }
   plotter->update();
 }
 
 void PlotTab::on_standardPushButton_clicked() {
-  this->on_xminDSpinBox_valueChanged(-10);
-  this->on_xmaxDSpinBox_valueChanged(10);
-  this->on_yminDSpinBox_valueChanged(-10);
-  this->on_ymaxDSpinBox_valueChanged(10);
+  plotter->setXMin(-10);
+  plotter->setXMax(10);
+  plotter->setYMin(-10);
+  plotter->setYMax(10);
 }
 
 void PlotTab::on_plotter_newXMin(double xmin) {
@@ -158,8 +179,64 @@ void PlotTab::on_plotter_newYTicks(double yticks) {
 }
 
 void PlotTab::on_exportPushButton_clicked() {
+  ExportDialog export_dialog(plotter->width(), plotter->height(), this);
+  int ret = export_dialog.exec();
+
+  if(ret == QDialog::Rejected)
+    return;
+
+  // Accepted
+  QString filter;
+  switch(export_dialog.outputFormatComboBox->currentIndex()) {
+  case ExportDialog::pdf: filter = "PDF-Files (*.pdf)"; break;
+  case ExportDialog::png: filter = "PNG-Files (*.png)"; break;
+  }
+  QString filename = QFileDialog::getSaveFileName(this, "Export to filename...", QDir::currentPath(), filter);
+  if(filename.isEmpty())
+    return;
+
+  // extract values from export_dialog
+  double width = export_dialog.widthSpinBox->value(),
+    height = export_dialog.heightSpinBox->value();
+  QPrinter::Unit unit = QPrinter::Millimeter;
+  if(export_dialog.measureComboBox->currentIndex()==ExportDialog::cm) {
+    width  *= 10;
+    height *= 10;
+  } else unit = QPrinter::Inch;
+
+  int res_dpi = export_dialog.resSpinBox->value();
+  if(export_dialog.resRatioComboBox->currentIndex()==ExportDialog::cm_px)
+    res_dpi /= 2.54; 
+
+  // branch for pdf or png output
+  if(export_dialog.outputFormatComboBox->currentIndex() == ExportDialog::pdf)
+    printPDF(filename, width, height, unit, res_dpi);
+  else
+    printPNG(filename, width, height, unit, res_dpi);
+}
+
+void PlotTab::printPDF(const QString &filename, double width, double height, QPrinter::Unit unit, int res_dpi) const {
   QPrinter printer; // (QPrinter::HighResolution);
+  printer.setPaperSize(QSizeF(width, height), unit);
+  printer.setPageMargins(0, 0, 0, 0, QPrinter::Inch);
+  printer.setResolution(res_dpi);
+
+  printer.setCreator("MathTools");
   printer.setOutputFormat(QPrinter::PdfFormat);
-  printer.setOutputFileName("test.pdf");
-  plotter->paintIt(&printer);
+  printer.setOutputFileName(filename);
+  plotter->paintIt(&printer, QPainter::Antialiasing | QPainter::TextAntialiasing | QPainter::SmoothPixmapTransform);
+}
+
+void PlotTab::printPNG(const QString &filename, double width, double height, QPrinter::Unit unit, int res_dpi) const {
+  if(unit == QPrinter::Millimeter) {
+    width  /= 25.4;
+    height /= 25.4;
+  }
+
+  QImage printer(width*res_dpi, height*res_dpi, QImage::Format_RGB888);
+  printer.setDotsPerMeterX(res_dpi/2.54*100);
+  printer.setDotsPerMeterY(res_dpi/2.54*100);
+  printer.fill(0xffffff);
+  plotter->paintIt(&printer, QPainter::Antialiasing | QPainter::TextAntialiasing | QPainter::SmoothPixmapTransform);
+  printer.save(filename);
 }

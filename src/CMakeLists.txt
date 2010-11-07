@@ -7,17 +7,20 @@ set(MathTools_SRCS
   main.cpp
   Plotter.cpp
   PlotTab.cpp  
+  ExportDialog.cpp
 )
 
 set(MathTools_MOC_HDRS
   MathTools.hpp
   PlotTab.hpp
   Plotter.hpp
+  ExportDialog.hpp
 )
 
 set(MathTools_UIS
   mathtoolsmain.ui
   plottab.ui
+  exportdialog.ui
 )
 
 add_subdirectory(qtcolorcombobox)
