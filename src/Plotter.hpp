@@ -4,6 +4,8 @@
 #include <QtGui/QFrame>
 #include <QtGui/QPainter>
 
+#include "Exportable.hpp"
+
 // classes defined elsewhere
 class MathFunction;
 class QPaintEvent;
@@ -12,7 +14,7 @@ class QWheelEvent;
 class QFrame;
 class QPaintDevice;
 
-class Plotter : public QFrame {
+class Plotter : public QFrame, public Exportable {
 
 Q_OBJECT
 

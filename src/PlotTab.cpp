@@ -1,11 +1,10 @@
 #include <QFileDialog>
-#include <QPrinter>
-#include <QImage>
-#include <QSizeF>
 
 #include "PlotTab.hpp"
 #include "MathFunction.hpp"
 #include "ExportDialog.hpp"
+
+#include "Exporter.hpp"
 
 PlotTab::PlotTab(QWidget* parent) : QWidget(parent) {
   setupUi(this);
@@ -198,45 +197,21 @@ void PlotTab::on_exportPushButton_clicked() {
   // extract values from export_dialog
   double width = export_dialog.widthSpinBox->value(),
     height = export_dialog.heightSpinBox->value();
-  QPrinter::Unit unit = QPrinter::Millimeter;
   if(export_dialog.measureComboBox->currentIndex()==ExportDialog::cm) {
-    width  *= 10;
-    height *= 10;
-  } else unit = QPrinter::Inch;
+    width  /= 2.54;
+    height /= 2.54;
+  };
 
   int res_dpi = export_dialog.resSpinBox->value();
   if(export_dialog.resRatioComboBox->currentIndex()==ExportDialog::cm_px)
     res_dpi /= 2.54; 
 
-  // branch for pdf or png output
+  // export to file
+  Exporter* exporter;
   if(export_dialog.outputFormatComboBox->currentIndex() == ExportDialog::pdf)
-    printPDF(filename, width, height, unit, res_dpi);
+    exporter = ExportPDF::getExportPDF();
   else
-    printPNG(filename, width, height, unit, res_dpi);
-}
+    exporter = ExportPNG::getExportPNG();
 
-void PlotTab::printPDF(const QString &filename, double width, double height, QPrinter::Unit unit, int res_dpi) const {
-  QPrinter printer; // (QPrinter::HighResolution);
-  printer.setPaperSize(QSizeF(width, height), unit);
-  printer.setPageMargins(0, 0, 0, 0, QPrinter::Inch);
-  printer.setResolution(res_dpi);
-
-  printer.setCreator("MathTools");
-  printer.setOutputFormat(QPrinter::PdfFormat);
-  printer.setOutputFileName(filename);
-  plotter->paintIt(&printer, QPainter::Antialiasing | QPainter::TextAntialiasing | QPainter::SmoothPixmapTransform);
-}
-
-void PlotTab::printPNG(const QString &filename, double width, double height, QPrinter::Unit unit, int res_dpi) const {
-  if(unit == QPrinter::Millimeter) {
-    width  /= 25.4;
-    height /= 25.4;
-  }
-
-  QImage printer(width*res_dpi, height*res_dpi, QImage::Format_RGB888);
-  printer.setDotsPerMeterX(res_dpi/2.54*100);
-  printer.setDotsPerMeterY(res_dpi/2.54*100);
-  printer.fill(0xffffff);
-  plotter->paintIt(&printer, QPainter::Antialiasing | QPainter::TextAntialiasing | QPainter::SmoothPixmapTransform);
-  printer.save(filename);
+  exporter->save(filename, plotter, width, height, res_dpi);
 }

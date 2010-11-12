@@ -8,6 +8,7 @@ set(MathTools_SRCS
   Plotter.cpp
   PlotTab.cpp  
   ExportDialog.cpp
+  Exporter.cpp
 )
 
 set(MathTools_MOC_HDRS
