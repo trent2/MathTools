@@ -50,7 +50,7 @@ void MathFunction::parse() {
   try {
     mFunc_term = (*reader)(mOrig_func_string);
     mNum_Func = numeric_function_builder::create_func(mFunc_term);
-  } catch (std::invalid_argument& err) {
+  } catch (std::exception& err) {
     mParseOk = false;
   }
 }
