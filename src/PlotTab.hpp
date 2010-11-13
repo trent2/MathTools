@@ -1,7 +1,5 @@
 #ifndef _PLOT_TAB_HPP_
 #define _PLOT_TAB_HPP_
-#include <QPrinter>
-
 #include "ui_plottab.h"
 
 class PlotTab : public QWidget, private Ui::PlotForm {
@@ -49,8 +47,5 @@ private slots:  // slots are auto-connected
 
   // export to pdf
   void on_exportPushButton_clicked();
-private:
-  void printPDF(const QString &, double, double, QPrinter::Unit, int) const;
-  void printPNG(const QString &, double, double, QPrinter::Unit, int) const;
 };
 #endif
