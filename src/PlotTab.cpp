@@ -115,24 +115,24 @@ void PlotTab::on_yticksDSpinBox_valueChanged(double yticks) {
 }
 
 void PlotTab::on_xAutoCheckBox_toggled(bool b) {
-  plotter->compAutoXTicks = b;
+  plotter->setCompAutoXTicks(b);
   plotter->update();
 }
 
 void PlotTab::on_yAutoCheckBox_toggled(bool b) {
-  plotter->compAutoYTicks = b;
+  plotter->setCompAutoYTicks(b);
   plotter->update();
 }
 
 void PlotTab::on_gridXCheckBox_toggled(bool b) {
-  plotter->drawGridX = b;
+  plotter->setDrawGridX(b);
   if(!b)
     gridBothCheckBox->setChecked(false);
   plotter->update();
 }
 
 void PlotTab::on_gridYCheckBox_toggled(bool b) {
-  plotter->drawGridY = b;
+  plotter->setDrawGridY(b);
   if(!b)
     gridBothCheckBox->setChecked(false);
   plotter->update();

@@ -15,24 +15,135 @@
 #include "Calc.hpp"
 #include "PlotterHelper.hpp"
 
-const int Plotter::tickPixelDistForAuto = 50;
-const int Plotter::descAutoPixelDist = 100;
-const double Plotter::zoomFactor = 1.2;
+class Plotter_Implementation {
+private:
+  Plotter_Implementation(Plotter *pSrc);
+  ~Plotter_Implementation();
 
+  friend class Plotter;
+  Plotter *src;
 
-Plotter::Plotter(QWidget *parent) : QFrame(parent),
-				    compAutoXTicks(false), compAutoYTicks(false), drawGridX(false), drawGridY(false),
-				    xmin(-10), xmax(10), ymin(-10), ymax(10), xticks(1), yticks(1),
-				    verticalCorrection(true), leftPressed(false) {
-  setCursor(Qt::OpenHandCursor);
+  // compute x- and y-ticks automatically
+  bool compAutoXTicks, compAutoYTicks;
+  // draw grid
+  bool drawGridX, drawGridY;
+
+  static const int tickPixelDistForAuto;
+  static const int descAutoPixelDist;
+  static const double zoomFactor;
+
+  // minimum and maximum of real view window
+  double xmin, xmax, ymin, ymax;
+  // tick-lenght for axis ticks
+  double xticks, yticks;
+
+  // flag to determine whether to draw vertical lines
+  bool verticalCorrection;
+
+  // for mouse movement of the graph
+  bool leftPressed;
+  // modifiers hit when mouse was pressed
+  unsigned int key_mod;
+
+  // old values for tracking resize and move operations
+  struct old_vals_t {
+    double xmin, xmax, ymin, ymax;
+    // mean(xmax,xmin), mean(ymax,ymin)
+    double anchorMX, anchorMY;
+    // position of mouse move start (in pixel coords)
+    int anchorWX, anchorWY;
+  } old_vals;
+
+  struct cs_params {
+    int winwidth, winheight;
+    // pixels per unit
+    double xstep, ystep;
+    // distance between number label on axes
+    double descDistX, descDistY;
+  } screen_params;
+
+  std::vector<MathFunction> mfunc;
+
+  void plotGrid(QPainter&, const cs_params&, qreal) const;
+  void computeAutoTicks();
+  cs_params computeCSParameters(const QPaintDevice*) const;
+  double normalizeTickValue(double) const;
+
+  // set (x,y) as the center of the cs
+  void setCenter(double x, double y);
+
+  // change axes size by dx, dy
+  void resizeAxes(double dx, double dy);
+
+  // f>1 indicates to zoom in, f<1 zooms out
+  void zoomToCenter(int, int, double f);
+};
+
+const int Plotter_Implementation::tickPixelDistForAuto = 50;
+const int Plotter_Implementation::descAutoPixelDist = 100;
+const double Plotter_Implementation::zoomFactor = 1.2;
+
+Plotter_Implementation::Plotter_Implementation(Plotter *pSrc) : src(pSrc),
+    compAutoXTicks(false), compAutoYTicks(false), drawGridX(false), drawGridY(false),
+    xmin(-10), xmax(10), ymin(-10), ymax(10), xticks(1), yticks(1),
+    verticalCorrection(true), leftPressed(false) {
+  src->setCursor(Qt::OpenHandCursor);
   mfunc.push_back(std::string(""));
   mfunc.push_back(std::string(""));
   mfunc.push_back(std::string(""));
   mfunc.push_back(std::string(""));
 }
 
-Plotter::~Plotter() {
+
+
+Plotter_Implementation::~Plotter_Implementation() {
   mfunc.clear();
+}
+
+Plotter::Plotter(QWidget *parent) : QFrame(parent), impl(new Plotter_Implementation(this)) { }
+
+Plotter::~Plotter() {
+  delete impl;
+}
+
+void Plotter::setXMin(double xm) {
+  impl->xmin = xm; newXMin(xm);
+}
+
+void Plotter::setXMax(double xm) {
+  impl->xmax = xm; newXMax(xm);
+}
+
+void Plotter::setYMin(double ym) {
+  impl->ymin = ym; newYMin(ym);
+}
+
+void Plotter::setYMax(double ym) {
+  impl->ymax = ym; newYMax(ym);
+}
+
+void Plotter::setXTicks(double xt) {
+  impl->xticks = xt; newXTicks(xt);
+}
+
+void Plotter::setYTicks(double yt) {
+  impl->yticks = yt; newYTicks(yt);
+}
+
+void Plotter::setCompAutoXTicks(bool b) {
+  impl->compAutoXTicks = b;
+}
+
+void Plotter::setCompAutoYTicks(bool b) {
+  impl->compAutoYTicks = b;
+}
+
+void Plotter::setDrawGridX(bool b) {
+  impl->drawGridX = b;
+}
+
+void Plotter::setDrawGridY(bool b) {
+  impl->drawGridY = b;
 }
 
 void Plotter::update() {
@@ -40,16 +151,16 @@ void Plotter::update() {
 }
 
 MathFunction& Plotter::getFunction(int index) {
-  return mfunc[index];
+  return impl->mfunc[index];
 }
 
 void Plotter::paintEvent(QPaintEvent *) {
   // do non-const operations
-  computeAutoTicks();
-  screen_params = computeCSParameters(this);
+  impl->computeAutoTicks();
+  impl->screen_params = impl->computeCSParameters(this);
   for(int i=0; i<4; ++i)
-    if(mfunc[i].parseOk())
-      mfunc[i].setUStepsize(1.0/screen_params.xstep);
+    if(impl->mfunc[i].parseOk())
+      impl->mfunc[i].setUStepsize(1.0/impl->screen_params.xstep);
 
   paintIt(this);
 }
@@ -63,11 +174,11 @@ void Plotter::paintIt(QPaintDevice *d, QPainter::RenderHints hints) const {
   double y, yold, yplot, yplotold;
   qreal res_factor = PlotHelp::getResFactor(p.device(), this);
 
-  cs_params param;
+  Plotter_Implementation::cs_params param;
   if(d != this)
-    param = computeCSParameters(d);
+    param = impl->computeCSParameters(d);
   else
-    param = screen_params;
+    param = impl->screen_params;
 
   // const double xustep = 1.0/param.xstep;
 
@@ -76,28 +187,28 @@ void Plotter::paintIt(QPaintDevice *d, QPainter::RenderHints hints) const {
 
   //  p.setPen(QPen(Qt::black, 1));
 
-  plotGrid(p, param, res_factor);
+  impl->plotGrid(p, param, res_factor);
 
   // draw functions
   for(int i=0; i<4; ++i)
-    if(mfunc[i].parseOk()) {  // function term is parsable hence evaluable
+    if(impl->mfunc[i].parseOk()) {  // function term is parsable hence evaluable
 
       QPainterPath pathstroke;
       nextIsMove = true;
 
-      p.setPen(QPen(mfunc[i].getColor(), 2*res_factor));
+      p.setPen(QPen(impl->mfunc[i].getColor(), 2*res_factor));
 
       for(int x=0; x<=param.winwidth; ++x) {
 	// compute value of functions
-	y = mfunc[i](xmin+x/param.xstep);
+	y = impl->mfunc[i](impl->xmin+x/param.xstep);
 	if(!x)
 	  yold = y;
 
-	yplot = param.winheight-calc::roundi((y-ymin)*param.ystep);
-	yplotold = param.winheight-calc::roundi((yold-ymin)*param.ystep);
+	yplot = param.winheight-calc::roundi((y-impl->ymin)*param.ystep);
+	yplotold = param.winheight-calc::roundi((yold-impl->ymin)*param.ystep);
 
 	// don't draw lines crossing the screen vertically; also don't draw to infinity or nan
-	if((verticalCorrection && (yplotold<0 || yplotold>param.winheight) && (yplot<0 || yplot>param.winheight)) ||
+	if((impl->verticalCorrection && (yplotold<0 || yplotold>param.winheight) && (yplot<0 || yplot>param.winheight)) ||
 	   std::isnan(y) || std::isinf(y))
 	  nextIsMove = true;
 	else if(yplot<0)
@@ -118,7 +229,7 @@ void Plotter::paintIt(QPaintDevice *d, QPainter::RenderHints hints) const {
   p.end();
 }
 
-void Plotter::plotGrid(QPainter &p, const cs_params &param, qreal res_factor) const {
+void Plotter_Implementation::plotGrid(QPainter &p, const cs_params &param, qreal res_factor) const {
   double tick;
   QSize textSizeMax;
   QFont myFont;
@@ -206,7 +317,7 @@ void Plotter::plotGrid(QPainter &p, const cs_params &param, qreal res_factor) co
     - xstep, ystep (number of device units per cs unit)
     - descDistX, descDistY (distance between numbers drawn on the display)
  */
-Plotter::cs_params Plotter::computeCSParameters(const QPaintDevice *paintDev) const {
+Plotter_Implementation::cs_params Plotter_Implementation::computeCSParameters(const QPaintDevice *paintDev) const {
   cs_params ret;
   ret.winwidth = paintDev->width()-1;
   ret.winheight = paintDev->height()-1;
@@ -221,18 +332,18 @@ Plotter::cs_params Plotter::computeCSParameters(const QPaintDevice *paintDev) co
   return ret;
 }
 
-void Plotter::computeAutoTicks() {
+void Plotter_Implementation::computeAutoTicks() {
   if(compAutoXTicks) {
-    xticks = normalizeTickValue((xmax-xmin)*((double)tickPixelDistForAuto)/width());
-    emit newXTicks(xticks);
+    xticks = normalizeTickValue((xmax-xmin)*((double)tickPixelDistForAuto)/src->width());
+    emit src->newXTicks(xticks);
   }
   if(compAutoYTicks) {
-    yticks = normalizeTickValue((ymax-ymin)*((double)tickPixelDistForAuto)/height());
-    emit newYTicks(yticks);
+    yticks = normalizeTickValue((ymax-ymin)*((double)tickPixelDistForAuto)/src->height());
+    emit src->newYTicks(yticks);
   }
 }
 
-double Plotter::normalizeTickValue(double tick) const {
+double Plotter_Implementation::normalizeTickValue(double tick) const {
   // only use positive tick value
   if(tick>0) {
     if(tick>0.5)
@@ -248,7 +359,7 @@ double Plotter::normalizeTickValue(double tick) const {
   return tick;
 }
 
-void Plotter::setCenter(double x, double y) {
+void Plotter_Implementation::setCenter(double x, double y) {
   // center of cs
   double mx = (xmax+xmin)/2,
     my = (ymax+ymin)/2;
@@ -258,25 +369,25 @@ void Plotter::setCenter(double x, double y) {
   ymin += (y-my);
   ymax += (y-my);
 
-  emit newXMin(xmin);
-  emit newXMax(xmax);
-  emit newYMin(ymin);
-  emit newYMax(ymax);
+  emit src->newXMin(xmin);
+  emit src->newXMax(xmax);
+  emit src->newYMin(ymin);
+  emit src->newYMax(ymax);
 }
 
-void Plotter::resizeAxes(double dx, double dy) {
+void Plotter_Implementation::resizeAxes(double dx, double dy) {
   xmin = old_vals.xmin+dx/2;
   xmax = old_vals.xmax-dx/2;
   ymin = old_vals.ymin+dy/2;
   ymax = old_vals.ymax-dy/2;
 
-  emit newXMin(xmin);
-  emit newXMax(xmax);
-  emit newYMin(ymin);
-  emit newYMax(ymax);
+  emit src->newXMin(xmin);
+  emit src->newXMax(xmax);
+  emit src->newYMin(ymin);
+  emit src->newYMax(ymax);
 }
 
-void Plotter::zoomToCenter(int wx, int wy, double f) {
+void Plotter_Implementation::zoomToCenter(int wx, int wy, double f) {
   int dw = wx-screen_params.winwidth/2;
   double tw = screen_params.xstep;
   int dh = screen_params.winheight/2-wy;
@@ -306,35 +417,35 @@ void Plotter::zoomToCenter(int wx, int wy, double f) {
   ymin -= dh/th;
   ymax -= dh/th;
 
-  emit newXMin(xmin);
-  emit newXMax(xmax);
-  emit newYMin(ymin);
-  emit newYMax(ymax);
+  emit src->newXMin(xmin);
+  emit src->newXMax(xmax);
+  emit src->newYMin(ymin);
+  emit src->newYMax(ymax);
   setCenter((xmax+xmin)/2, (ymax+ymin)/2);
 }
 
 void Plotter::wheelEvent(QWheelEvent *e) {
-  zoomToCenter(e->x(), e->y(), e->delta() < 0 ? zoomFactor : 1.0/zoomFactor);
+  impl->zoomToCenter(e->x(), e->y(), e->delta() < 0 ? Plotter_Implementation::zoomFactor : 1.0/Plotter_Implementation::zoomFactor);
 }
 
 void Plotter::mousePressEvent(QMouseEvent *e) {
-  leftPressed = false;
-  key_mod = e->modifiers();
+  impl->leftPressed = false;
+  impl->key_mod = e->modifiers();
 
   if(e->button() == Qt::LeftButton) {
-    leftPressed = true;
+    impl->leftPressed = true;
     setCursor(Qt::ClosedHandCursor);
-    old_vals.anchorMX = (xmax+xmin)/2;
-    old_vals.anchorMY = (ymax+ymin)/2;
-    old_vals.anchorWX = e->x();
-    old_vals.anchorWY = e->y();
+    impl->old_vals.anchorMX = (impl->xmax+impl->xmin)/2;
+    impl->old_vals.anchorMY = (impl->ymax+impl->ymin)/2;
+    impl->old_vals.anchorWX = e->x();
+    impl->old_vals.anchorWY = e->y();
 
-    if(key_mod == Qt::ShiftModifier) {
+    if(impl->key_mod == Qt::ShiftModifier) {
       setCursor(Qt::SizeAllCursor);
-      old_vals.xmin = xmin;
-      old_vals.xmax = xmax;
-      old_vals.ymin = ymin;
-      old_vals.ymax = ymax;
+      impl->old_vals.xmin = impl->xmin;
+      impl->old_vals.xmax = impl->xmax;
+      impl->old_vals.ymin = impl->ymin;
+      impl->old_vals.ymax = impl->ymax;
     }
   }
 }
@@ -344,15 +455,21 @@ void Plotter::mouseReleaseEvent(QMouseEvent*) {
 }
 
 void Plotter::mouseMoveEvent(QMouseEvent *e) {
-  int dx = e->x() - old_vals.anchorWX, dy = old_vals.anchorWY - e->y();
+  int dx = e->x() - impl->old_vals.anchorWX, dy = impl->old_vals.anchorWY - e->y();
 
 
-  if(leftPressed)
-    switch(key_mod) {
+  if(impl->leftPressed)
+    switch(impl->key_mod) {
     case Qt::NoModifier :
-      setCenter(old_vals.anchorMX - dx/screen_params.xstep, old_vals.anchorMY - dy/screen_params.ystep); break;
+      impl->setCenter(impl->old_vals.anchorMX - dx/impl->screen_params.xstep,
+		      impl->old_vals.anchorMY - dy/impl->screen_params.ystep); break;
     case Qt::ShiftModifier :
-      resizeAxes(dx/screen_params.xstep, dy/screen_params.ystep);break;
+      impl->resizeAxes(dx/impl->screen_params.xstep,
+		       dy/impl->screen_params.ystep);break;
     default: break;
     }
+}
+
+void Plotter::setVerticalCorrection(bool v) {
+  impl->verticalCorrection = v;
 }
