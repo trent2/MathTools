@@ -68,7 +68,6 @@ void PlotTab::on_xminDSpinBox_valueChanged(double xmin) {
     xmaxDSpinBox->setValue(xmax);
   }
   plotter->setXMin(xmin);
-  plotter->update();
 }
 
 void PlotTab::on_xmaxDSpinBox_valueChanged(double xmax) {
@@ -79,7 +78,6 @@ void PlotTab::on_xmaxDSpinBox_valueChanged(double xmax) {
     xminDSpinBox->setValue(xmin);
   }
   plotter->setXMax(xmax);
-  plotter->update();
 }
 
 void PlotTab::on_yminDSpinBox_valueChanged(double ymin) {
@@ -90,7 +88,6 @@ void PlotTab::on_yminDSpinBox_valueChanged(double ymin) {
     ymaxDSpinBox->setValue(ymax);
   }
   plotter->setYMin(ymin);
-  plotter->update();
 }
 
 void PlotTab::on_ymaxDSpinBox_valueChanged(double ymax) {
@@ -101,7 +98,6 @@ void PlotTab::on_ymaxDSpinBox_valueChanged(double ymax) {
     yminDSpinBox->setValue(ymin);
   }
   plotter->setYMax(ymax);
-  plotter->update();
 }
 
 void PlotTab::on_xticksDSpinBox_valueChanged(double xticks) {
@@ -155,18 +151,22 @@ void PlotTab::on_standardPushButton_clicked() {
 
 void PlotTab::on_plotter_newXMin(double xmin) {
   xminDSpinBox->setValue(xmin);
+  plotter->update();
 }
 
 void PlotTab::on_plotter_newXMax(double xmax) {
   xmaxDSpinBox->setValue(xmax);
+  plotter->update();
 }
 
 void PlotTab::on_plotter_newYMin(double ymin) {
   yminDSpinBox->setValue(ymin);
+  plotter->update();
 }
 
 void PlotTab::on_plotter_newYMax(double ymax) {
   ymaxDSpinBox->setValue(ymax);
+  plotter->update();
 }
 
 void PlotTab::on_plotter_newXTicks(double xticks) {
