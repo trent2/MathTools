@@ -4,10 +4,10 @@
 #include <QtGui/QFrame>
 #include <QtGui/QPainter>
 
+#include "PlotterHelper.hpp"
 #include "Exportable.hpp"
 
 // classes defined elsewhere
-class MathFunction;
 class QPaintEvent;
 class QMouseEvent;
 class QWheelEvent;
@@ -25,16 +25,16 @@ friend class Plotter_Implementation;
 
 public:
   Plotter(QWidget *parent=0);
-  ~Plotter();
-
-  void update();
-  MathFunction& getFunction(int index);
-  void paintIt(QPaintDevice*, QPainter::RenderHints=0) const;
+  virtual ~Plotter();
 
   void setXMin(double xm);
   void setXMax(double xm);
   void setYMin(double ym);
   void setYMax(double ym);
+  double xMin() const;
+  double xMax() const;
+  double yMin() const;
+  double yMax() const;
   void setXTicks(double xt);
   void setYTicks(double yt);
   void setCompAutoXTicks(bool b);
@@ -43,17 +43,25 @@ public:
   void setDrawGridY(bool b);
 
 protected:  // all these methods are overwritten
-  void paintEvent(QPaintEvent *);
   void mouseMoveEvent(QMouseEvent *);
   void mousePressEvent(QMouseEvent *);
   void mouseReleaseEvent(QMouseEvent *);
   void wheelEvent(QWheelEvent *);
-
-private:
   Plotter_Implementation *impl;
 
-public slots:
-  void setVerticalCorrection(bool v);
+  /*** Determine parameters of paint device such as height, width,
+   *   number of given device units (in case of screen, this is pixel)
+   *   per coordinate system unit, distance between axis labels in device units
+   **/
+  PlotHelp::cs_params computeCSParameters(QPaintDevice *) const;
+
+  /*** Plot the coordinate grid on a QPainter p with a resolution factor
+   *   res_factor.
+   **/
+  void plotGrid(QPainter &p, qreal res_factor) const;
+
+private:
+  void paintEvent(QPaintEvent *);
 
 Q_SIGNALS:
   void newXMin(double);

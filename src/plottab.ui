@@ -158,7 +158,7 @@
     </widget>
    </item>
    <item row="0" column="1" rowspan="3">
-    <widget class="Plotter" name="plotter">
+    <widget class="FunctionPlotter" name="plotter">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
        <horstretch>0</horstretch>
@@ -495,9 +495,9 @@
    <header>qtcolorcombobox.hpp</header>
   </customwidget>
   <customwidget>
-   <class>Plotter</class>
+   <class>FunctionPlotter</class>
    <extends>QFrame</extends>
-   <header>Plotter.hpp</header>
+   <header>FunctionPlotter.hpp</header>
    <container>1</container>
    <slots>
     <signal>newXMin(double)</signal>

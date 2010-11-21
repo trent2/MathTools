@@ -6,7 +6,9 @@ set(MathTools_SRCS
   MathFunction.cpp
   main.cpp
   Plotter.cpp
+  FunctionPlotter.cpp
   PlotTab.cpp  
+  PlotterHelper.cpp
   ExportDialog.cpp
   Exporter.cpp
 )
@@ -15,6 +17,7 @@ set(MathTools_MOC_HDRS
   MathTools.hpp
   PlotTab.hpp
   Plotter.hpp
+  FunctionPlotter.hpp
   ExportDialog.hpp
 )
 

@@ -4,11 +4,11 @@
 #include <cmath>
 
 namespace calc {
-  int roundi(double d) {
+  inline int roundi(double d) {
     return d<0 ? d-0.5 : d+0.5;
   }
 
-  double round(double d) {
+  inline double round(double d) {
     return d<0 ? std::ceil(d-0.5) : std::floor(d+0.5);
   }
 }
