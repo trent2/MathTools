@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>AnalysisForm</class>
+ <widget class="QWidget" name="AnalysisForm">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>843</width>
+    <height>821</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Function Analysis</string>
+  </property>
+  <widget class="Plotter" name="plotter">
+   <property name="geometry">
+    <rect>
+     <x>370</x>
+     <y>20</y>
+     <width>461</width>
+     <height>791</height>
+    </rect>
+   </property>
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>281</width>
+     <height>311</height>
+    </size>
+   </property>
+   <property name="frameShape">
+    <enum>QFrame::StyledPanel</enum>
+   </property>
+   <property name="frameShadow">
+    <enum>QFrame::Raised</enum>
+   </property>
+  </widget>
+  <widget class="QGroupBox" name="groupBox">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>10</y>
+     <width>351</width>
+     <height>191</height>
+    </rect>
+   </property>
+   <property name="title">
+    <string>Function</string>
+   </property>
+   <widget class="QLineEdit" name="fxLineEdit">
+    <property name="geometry">
+     <rect>
+      <x>50</x>
+      <y>20</y>
+      <width>291</width>
+      <height>25</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="fxLabel">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>20</y>
+      <width>31</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>f(x)=</string>
+    </property>
+   </widget>
+   <widget class="QDoubleSpinBox" name="xminDSpinBox">
+    <property name="geometry">
+     <rect>
+      <x>50</x>
+      <y>50</y>
+      <width>83</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="decimals">
+     <number>4</number>
+    </property>
+    <property name="minimum">
+     <double>-99999.000000000000000</double>
+    </property>
+    <property name="maximum">
+     <double>99999.000000000000000</double>
+    </property>
+    <property name="value">
+     <double>-10.000000000000000</double>
+    </property>
+   </widget>
+   <widget class="QDoubleSpinBox" name="xmaxDSpinBox">
+    <property name="geometry">
+     <rect>
+      <x>50</x>
+      <y>90</y>
+      <width>83</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="decimals">
+     <number>4</number>
+    </property>
+    <property name="minimum">
+     <double>-99999.000000000000000</double>
+    </property>
+    <property name="maximum">
+     <double>99999.000000000000000</double>
+    </property>
+    <property name="value">
+     <double>10.000000000000000</double>
+    </property>
+   </widget>
+   <widget class="QLabel" name="xminLabel">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>50</y>
+      <width>31</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>xmin</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="xmaxLabel">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>90</y>
+      <width>31</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>xmax</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="computePushButton">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>130</y>
+      <width>83</width>
+      <height>26</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>&amp;Compute</string>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QTextEdit" name="analysisOutputTextEdit">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>220</y>
+     <width>351</width>
+     <height>591</height>
+    </rect>
+   </property>
+   <property name="textInteractionFlags">
+    <set>Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
+   </property>
+  </widget>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>Plotter</class>
+   <extends>QFrame</extends>
+   <header>Plotter.hpp</header>
+   <container>1</container>
+   <slots>
+    <signal>newXMin(double)</signal>
+    <signal>newXMax(double)</signal>
+    <signal>newYMin(double)</signal>
+    <signal>newYMax(double)</signal>
+    <signal>newXTicks(double)</signal>
+    <signal>newYTicks(double)</signal>
+    <slot>setXMin(double)</slot>
+    <slot>setXMax(double)</slot>
+    <slot>setYMin(double)</slot>
+    <slot>setYMax(double)</slot>
+    <slot>setXTicks(double)</slot>
+    <slot>setYTicks(double)</slot>
+    <slot>autoXTicks(bool)</slot>
+    <slot>autoYTicks(bool)</slot>
+    <slot>setStandardWindow()</slot>
+    <slot>f1ToFile()</slot>
+    <slot>toggleGrid(bool)</slot>
+   </slots>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+ <designerdata>
+  <property name="gridDeltaX">
+   <number>10</number>
+  </property>
+  <property name="gridDeltaY">
+   <number>10</number>
+  </property>
+  <property name="gridSnapX">
+   <bool>true</bool>
+  </property>
+  <property name="gridSnapY">
+   <bool>true</bool>
+  </property>
+  <property name="gridVisible">
+   <bool>true</bool>
+  </property>
+ </designerdata>
+</ui>

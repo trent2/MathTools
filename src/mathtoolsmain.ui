@@ -55,6 +55,7 @@
      <string>&amp;Analysis</string>
     </property>
     <addaction name="plotAction"/>
+    <addaction name="actionFunction_Analysis"/>
    </widget>
    <addaction name="menu_Datei"/>
    <addaction name="menu_Analysis"/>
@@ -72,6 +73,11 @@
   <action name="plotAction">
    <property name="text">
     <string>&amp;Plot</string>
+   </property>
+  </action>
+  <action name="actionFunction_Analysis">
+   <property name="text">
+    <string>Function &amp;Analysis</string>
    </property>
   </action>
  </widget>
