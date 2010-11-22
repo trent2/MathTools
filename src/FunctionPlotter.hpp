@@ -28,14 +28,5 @@ public slots:
 
 private:
   FunctionPlotter_Implementation *impl_fp;
-
-Q_SIGNALS:
-  void newXMin(double);
-  void newXMax(double);
-  void newYMin(double);
-  void newYMax(double);
-
-  void newXTicks(double);
-  void newYTicks(double);
 };
 #endif

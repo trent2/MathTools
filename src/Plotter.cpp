@@ -379,6 +379,6 @@ PlotHelp::cs_params Plotter::computeCSParameters(QPaintDevice *d) const {
   return impl->computeCSParameters(d);
 }
 
-void Plotter::plotGrid(QPainter &p, qreal res_factor) const {
-  impl->plotGrid(p, res_factor);
+void Plotter::plotGrid(QPainter &p) const {
+  impl->plotGrid(p, PlotHelp::getResFactor(p.device(), this));
 }

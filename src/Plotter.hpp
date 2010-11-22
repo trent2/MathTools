@@ -55,10 +55,9 @@ protected:  // all these methods are overwritten
    **/
   PlotHelp::cs_params computeCSParameters(QPaintDevice *) const;
 
-  /*** Plot the coordinate grid on a QPainter p with a resolution factor
-   *   res_factor.
+  /*** Plot the coordinate grid on a QPainter p.
    **/
-  void plotGrid(QPainter &p, qreal res_factor) const;
+  void plotGrid(QPainter &p) const;
 
 private:
   void paintEvent(QPaintEvent *);

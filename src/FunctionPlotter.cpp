@@ -54,8 +54,8 @@ void FunctionPlotter::paintIt(QPaintDevice *d, QPainter::RenderHints hints) cons
 
   bool nextIsMove;
   double y, yold, yplot, yplotold;
-  qreal res_factor = PlotHelp::getResFactor(p.device(), this);
 
+  qreal res_factor = PlotHelp::getResFactor(p.device(), this);
   PlotHelp::cs_params param = computeCSParameters(d);
 
   // const double xustep = 1.0/param.xstep;
@@ -65,7 +65,7 @@ void FunctionPlotter::paintIt(QPaintDevice *d, QPainter::RenderHints hints) cons
 
   //  p.setPen(QPen(Qt::black, 1));
 
-  plotGrid(p, res_factor);
+  plotGrid(p);
 
   // draw functions
   for(int i=0; i<4; ++i)
