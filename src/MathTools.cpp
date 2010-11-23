@@ -1,5 +1,6 @@
 #include <QtGui/QMainWindow>
 
+#include "BinomialDistTab.hpp"
 #include "PlotTab.hpp"
 #include "MathTools.hpp"
 
@@ -9,5 +10,9 @@ MathTools::MathTools(QWidget *parent, Qt::WFlags f) : QMainWindow(parent, f)
 }
 
 void MathTools::on_plotAction_triggered() {
-  mainTabWidget->addTab(new PlotTab(mainTabWidget), "Plot");
+  mainTabWidget->setCurrentIndex(mainTabWidget->addTab(new PlotTab(mainTabWidget), "Plot"));
+}
+
+void MathTools::on_binomialDistAction_triggered() {
+  mainTabWidget->setCurrentIndex(mainTabWidget->addTab(new BinomialDistTab(mainTabWidget), "Binomial Distribution"));
 }

@@ -55,6 +55,7 @@
      <string>&amp;Analysis</string>
     </property>
     <addaction name="plotAction"/>
+    <addaction name="binomialDistAction"/>
    </widget>
    <addaction name="menu_Datei"/>
    <addaction name="menu_Analysis"/>
@@ -72,6 +73,11 @@
   <action name="plotAction">
    <property name="text">
     <string>&amp;Plot</string>
+   </property>
+  </action>
+  <action name="binomialDistAction">
+   <property name="text">
+    <string>&amp;Binomial Distribution</string>
    </property>
   </action>
  </widget>
