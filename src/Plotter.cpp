@@ -10,15 +10,11 @@
 
 class Plotter_Implementation {
 private:
-  Plotter_Implementation(Plotter *pSrc);
+  Plotter_Implementation(Plotter *pSrc, Plotter::PlotterOptions opt);
 
   friend class Plotter;
   Plotter *src;
 
-  // compute x- and y-ticks automatically
-  bool compAutoXTicks, compAutoYTicks;
-  // draw grid
-  bool drawGridX, drawGridY;
 
   static const int tickPixelDistForAuto;
   static const int descAutoPixelDist;
@@ -31,6 +27,9 @@ private:
 
   // for mouse movement of the graph
   bool leftPressed;
+
+  // options bit-vector
+  int options_bv;
   // modifiers hit when mouse was pressed
   unsigned int key_mod;
 
@@ -55,16 +54,15 @@ private:
 
 const int Plotter_Implementation::tickPixelDistForAuto = 50;
 const int Plotter_Implementation::descAutoPixelDist = 100;
-const double Plotter_Implementation::zoomFactor = 1.2;
+const double Plotter_Implementation::zoomFactor = 1.1;
 
-Plotter_Implementation::Plotter_Implementation(Plotter *pSrc) : src(pSrc),
-    compAutoXTicks(false), compAutoYTicks(false), drawGridX(false), drawGridY(false),
-    xmin(-10), xmax(10), ymin(-10), ymax(10), xticks(1), yticks(1),
-    leftPressed(false) {
+Plotter_Implementation::Plotter_Implementation(Plotter *pSrc, Plotter::PlotterOptions opt) :
+  src(pSrc), xticks(1), yticks(1), leftPressed(false), options_bv(Plotter::Standard) {
   src->setCursor(Qt::OpenHandCursor);
 }
 
-Plotter::Plotter(QWidget *parent) : QFrame(parent), impl(new Plotter_Implementation(this)) { }
+Plotter::Plotter(QWidget *parent, PlotterOptions opt) :
+  QFrame(parent), impl(new Plotter_Implementation(this, opt)) { }
 
 Plotter::~Plotter() {
   delete impl;
@@ -110,22 +108,26 @@ double Plotter::yMax() const {
   return impl->ymax;
 }
 
-
 void Plotter::setCompAutoXTicks(bool b) {
-  impl->compAutoXTicks = b;
+  impl->options_bv |= Plotter::AutoTicksX;
 }
 
 void Plotter::setCompAutoYTicks(bool b) {
-  impl->compAutoYTicks = b;
+  impl->options_bv |= Plotter::AutoTicksY;
 }
 
 void Plotter::setDrawGridX(bool b) {
-  impl->drawGridX = b;
+  impl->options_bv |= Plotter::DrawGridX;
 }
 
 void Plotter::setDrawGridY(bool b) {
-  impl->drawGridY = b;
+  impl->options_bv |= Plotter::DrawGridY;
 }
+
+void Plotter::setOptions(int opt) {
+  impl->options_bv = opt;
+}
+
 
 void Plotter::paintEvent(QPaintEvent *e) {
   // do non-const operations
@@ -142,6 +144,8 @@ void Plotter_Implementation::plotGrid(QPainter &p, qreal res_factor) const {
   QString number;
   std::vector<QString> axisLabels;
   const PlotHelp::cs_params param = computeCSParameters(p.device());
+  bool drawGridX = options_bv & Plotter::DrawGridX,
+    drawGridY = options_bv & Plotter::DrawGridY;
 
   myFont.setPointSize(12);
   p.setFont(myFont);
@@ -238,11 +242,11 @@ PlotHelp::cs_params Plotter_Implementation::computeCSParameters(const QPaintDevi
 }
 
 void Plotter_Implementation::computeAutoTicks() {
-  if(compAutoXTicks) {
+  if(options_bv & Plotter::AutoTicksX) {
     xticks = normalizeTickValue((xmax-xmin)*((double)tickPixelDistForAuto)/src->width());
     emit src->newXTicks(xticks);
   }
-  if(compAutoYTicks) {
+  if(options_bv & Plotter::AutoTicksY) {
     yticks = normalizeTickValue((ymax-ymin)*((double)tickPixelDistForAuto)/src->height());
     emit src->newYTicks(yticks);
   }
@@ -269,27 +273,35 @@ void Plotter_Implementation::setCenter(double x, double y) {
   double mx = (xmax+xmin)/2,
     my = (ymax+ymin)/2;
   
-  xmin += (x-mx);
-  xmax += (x-mx);
-  ymin += (y-my);
-  ymax += (y-my);
-
-  emit src->newXMin(xmin);
-  emit src->newXMax(xmax);
-  emit src->newYMin(ymin);
-  emit src->newYMax(ymax);
+  if(!(options_bv & Plotter::ZoomFixHorizontal)) {
+    xmin += (x-mx);
+    xmax += (x-mx);
+    emit src->newXMin(xmin);
+    emit src->newXMax(xmax);
+  }
+  if(!(options_bv & Plotter::ZoomFixVertical)) {
+    ymin += (y-my);
+    ymax += (y-my);
+    emit src->newYMin(ymin);
+    emit src->newYMax(ymax);
+  }
 }
 
 void Plotter_Implementation::resizeAxes(double dx, double dy) {
-  xmin = old_vals.xmin+dx/2;
-  xmax = old_vals.xmax-dx/2;
-  ymin = old_vals.ymin+dy/2;
-  ymax = old_vals.ymax-dy/2;
+  if(!(options_bv & Plotter::ZoomFixHorizontal)) {
+    xmin = old_vals.xmin+dx/2;
+    xmax = old_vals.xmax-dx/2;
+    emit src->newXMin(xmin);
+    emit src->newXMax(xmax);
+  }
 
-  emit src->newXMin(xmin);
-  emit src->newXMax(xmax);
-  emit src->newYMin(ymin);
-  emit src->newYMax(ymax);
+  if(!(options_bv & Plotter::ZoomFixVertical)) {
+    ymin = old_vals.ymin+dy/2;
+    ymax = old_vals.ymax-dy/2;
+
+    emit src->newYMin(ymin);
+    emit src->newYMax(ymax);
+  }
 }
 
 void Plotter_Implementation::zoomToCenter(int wx, int wy, double f) {
@@ -299,33 +311,44 @@ void Plotter_Implementation::zoomToCenter(int wx, int wy, double f) {
   double th = screen_params.ystep;
 
   // shift (x,y) to center
-  xmin += dw/tw;
-  xmax += dw/tw;
-  ymin += dh/th;
-  ymax += dh/th;  
+  if(!(options_bv & Plotter::ZoomFixHorizontal)) {
+    xmin += dw/tw;
+    xmax += dw/tw;
 
-  tw = (xmax-xmin)*((f-1)/(2*f));
-  th = (ymax-ymin)*((f-1)/(2*f));
+    tw = (xmax-xmin)*((f-1)/(2*f));
 
-  // zoom
-  xmin += tw;
-  xmax -= tw;
-  ymin += th;
-  ymax -= th;
+    xmin += tw;
+    xmax -= tw;
 
-  // shift (x,y) back
-  tw = screen_params.winwidth/(xmax-xmin);
-  th = screen_params.winheight/(ymax-ymin);
+    tw = screen_params.winwidth/(xmax-xmin);
 
-  xmin -= dw/tw;
-  xmax -= dw/tw;
-  ymin -= dh/th;
-  ymax -= dh/th;
+    xmin -= dw/tw;
+    xmax -= dw/tw;
 
-  emit src->newXMin(xmin);
-  emit src->newXMax(xmax);
-  emit src->newYMin(ymin);
-  emit src->newYMax(ymax);
+    // shift (x,y) back
+
+    emit src->newXMin(xmin);
+    emit src->newXMax(xmax);
+  }
+
+  if(!(options_bv & Plotter::ZoomFixVertical)) {
+    ymin += dh/th;
+    ymax += dh/th;  
+
+    th = (ymax-ymin)*((f-1)/(2*f));
+
+    // zoom
+    ymin += th;
+    ymax -= th;
+
+    th = screen_params.winheight/(ymax-ymin);
+
+    ymin -= dh/th;
+    ymax -= dh/th;
+
+    emit src->newYMin(ymin);
+    emit src->newYMax(ymax);
+  }
   setCenter((xmax+xmin)/2, (ymax+ymin)/2);
 }
 

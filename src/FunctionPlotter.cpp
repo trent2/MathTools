@@ -37,7 +37,12 @@ FunctionPlotter_Implementation::~FunctionPlotter_Implementation() {
 }
 
 FunctionPlotter::FunctionPlotter(QWidget *parent) :
-  Plotter(parent), impl_fp(new FunctionPlotter_Implementation(this)) { }
+  Plotter(parent), impl_fp(new FunctionPlotter_Implementation(this)) {
+  setXMin(-10);
+  setXMax(10);
+  setYMin(-10);
+  setYMax(10);
+}
 
 FunctionPlotter::~FunctionPlotter() {
   delete impl_fp;

@@ -24,7 +24,10 @@ Q_OBJECT
 friend class Plotter_Implementation;
 
 public:
-  Plotter(QWidget *parent=0);
+  enum PlotterOptions {Standard=0, AutoTicksX=1, AutoTicksY=2, DrawGridX=4, DrawGridY=8,
+		       ZoomFixHorizontal=16, ZoomFixVertical=32};
+
+  Plotter(QWidget *parent=0, PlotterOptions opt = Plotter::Standard);
   virtual ~Plotter();
 
   void setXMin(double xm);
@@ -41,6 +44,7 @@ public:
   void setCompAutoYTicks(bool b);
   void setDrawGridX(bool b);
   void setDrawGridY(bool b);
+  void setOptions(int opt);
 
 protected:  // all these methods are overwritten
   void mouseMoveEvent(QMouseEvent *);
