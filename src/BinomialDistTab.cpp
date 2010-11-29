@@ -2,6 +2,7 @@
 #include <gsl/gsl_cdf.h>
 
 #include "BinomialDistTab.hpp"
+#include "ExportDialog.hpp"
 
 BinomialDistTab::BinomialDistTab(QWidget* parent) : QWidget(parent) {
   setupUi(this);
@@ -107,4 +108,9 @@ void BinomialDistTab::updateProbability() {
     v2 = gsl_cdf_binomial_P(kminSpinBox->value()-1, pDSpinBox->value(), nSpinBox->value());
 
   lcdNumber->display(gsl_cdf_binomial_P(kmaxSpinBox->value(), pDSpinBox->value(), nSpinBox->value())-v2);
+}
+
+void BinomialDistTab::on_exportPushButton_clicked() {
+  ExportDialog export_dialog(this, binPlotter, binPlotter->width(), binPlotter->height());
+  export_dialog.exec();
 }

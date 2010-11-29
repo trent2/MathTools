@@ -28,5 +28,9 @@ private slots:  // slots are auto-connected
   void on_kmaxSpinBox_valueChanged(int);
 
   void updateProbability();
+
+  // export
+  void on_exportPushButton_clicked();
+
 };
 #endif
