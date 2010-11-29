@@ -28,8 +28,8 @@ void BinomialDistPlotter::paintIt(QPaintDevice *d, QPainter::RenderHints hints) 
 
   // plot bars from i=0 to n
   for(int k=0; k<=mN; ++k) {
-    xp = calc::roundi((k - xMin()) * param.xstep);
-    xw = calc::roundi((k+1 - xMin()) * param.xstep) - xp;
+    xp = calc::roundi((k - xMin()) * param.xstep)-calc::roundi(param.xstep/2);
+    xw = calc::roundi((k+1 - xMin()) * param.xstep) - xp - calc::roundi(param.xstep/2);
 
     if(xp-param.xstep<=xp && xp<=param.winwidth) {
       if(mPdf)
