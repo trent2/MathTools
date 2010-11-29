@@ -22,6 +22,7 @@ void BinomialDistTab::on_nSpinBox_valueChanged(int n) {
 
 void BinomialDistTab::on_pDSpinBox_valueChanged(double p) {
   binPlotter->setP(p);
+  updateProbability();
   binPlotter->update();
 }
 
@@ -101,10 +102,8 @@ void BinomialDistTab::on_kmaxSpinBox_valueChanged(int) {
 }
 
 void BinomialDistTab::updateProbability() {
-  double v2;
-  if(kminSpinBox->value() == 0)
-    v2 = 0;
-  else
+  double v2 = 0;
+  if(kminSpinBox->value())
     v2 = gsl_cdf_binomial_P(kminSpinBox->value()-1, pDSpinBox->value(), nSpinBox->value());
 
   lcdNumber->display(gsl_cdf_binomial_P(kmaxSpinBox->value(), pDSpinBox->value(), nSpinBox->value())-v2);
