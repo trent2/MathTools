@@ -1,10 +1,6 @@
-#include <QFileDialog>
-
 #include "PlotTab.hpp"
 #include "MathFunction.hpp"
 #include "ExportDialog.hpp"
-
-#include "Exporter.hpp"
 
 PlotTab::PlotTab(QWidget* parent) : QWidget(parent) {
   setupUi(this);
@@ -178,40 +174,6 @@ void PlotTab::on_plotter_newYTicks(double yticks) {
 }
 
 void PlotTab::on_exportPushButton_clicked() {
-  ExportDialog export_dialog(plotter->width(), plotter->height(), this);
-  int ret = export_dialog.exec();
-
-  if(ret == QDialog::Rejected)
-    return;
-
-  // Accepted
-  QString filter;
-  switch(export_dialog.outputFormatComboBox->currentIndex()) {
-  case ExportDialog::pdf: filter = "PDF-Files (*.pdf)"; break;
-  case ExportDialog::png: filter = "PNG-Files (*.png)"; break;
-  }
-  QString filename = QFileDialog::getSaveFileName(this, "Export to filename...", QDir::currentPath(), filter);
-  if(filename.isEmpty())
-    return;
-
-  // extract values from export_dialog
-  double width = export_dialog.widthSpinBox->value(),
-    height = export_dialog.heightSpinBox->value();
-  if(export_dialog.measureComboBox->currentIndex()==ExportDialog::cm) {
-    width  /= 2.54;
-    height /= 2.54;
-  };
-
-  int res_dpi = export_dialog.resSpinBox->value();
-  if(export_dialog.resRatioComboBox->currentIndex()==ExportDialog::cm_px)
-    res_dpi /= 2.54; 
-
-  // export to file
-  Exporter* exporter;
-  if(export_dialog.outputFormatComboBox->currentIndex() == ExportDialog::pdf)
-    exporter = ExportPDF::getExportPDF();
-  else
-    exporter = ExportPNG::getExportPNG();
-
-  exporter->save(filename, plotter, width, height, res_dpi);
+  ExportDialog export_dialog(this, plotter, plotter->width(), plotter->height());
+  export_dialog.exec();
 }

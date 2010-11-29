@@ -1,4 +1,8 @@
+#include <QFileDialog>
+
 #include "ExportDialog.hpp"
+#include "Exporter.hpp"
+#include "Exportable.hpp"
 
 const int ExportDialog::minInchResRatio = 30;
 const int ExportDialog::maxInchResRatio = 7200;
@@ -8,9 +12,9 @@ const int ExportDialog::maxMMSize = 400;
 
 //  default: OutputFormat format = pdf, Measure m = cm,
 //           ResolutionRatio rr = in_px
-ExportDialog::ExportDialog(double width, double height, QWidget* parent, OutputFormat format,
-			   Measure m, ResolutionRatio rr) : QDialog(parent),
-							    mWidth(width), mHeight(height)
+ExportDialog::ExportDialog(QWidget* parent, Exportable *expo, double width, double height,
+			   OutputFormat format, Measure m, ResolutionRatio rr) : QDialog(parent),
+					       mExp(expo), mWidth(width), mHeight(height)
 {
 
   setupUi(this);
@@ -35,13 +39,35 @@ ExportDialog::ExportDialog(double width, double height, QWidget* parent, OutputF
   heightSpinBox->setValue(mHeight);
 }
 
-/*
-void ExportDialog::on_exportDialog_accept() {
+
+void ExportDialog::on_buttonBox_accepted() {
   QString filter;
   switch(outputFormatComboBox->currentIndex()) {
-  case pdf: filter = "PDF-Files (*.pdf)"; break;
-  case png: filter = "PNG-Files (*.png)"; break;
+  case ExportDialog::pdf: filter = "PDF-Files (*.pdf)"; break;
+  case ExportDialog::png: filter = "PNG-Files (*.png)"; break;
   }
-  filenameLineEdit->setText(QFileDialog::getSaveFileName(this, "Export to filename...", QDir::currentPath(), filter));
+  QString filename = QFileDialog::getSaveFileName(this, "Export to filename...", QDir::currentPath(), filter);
+  if(filename.isEmpty())
+    return;
+
+  // extract values from export_dialog
+  double width = widthSpinBox->value(),
+    height = heightSpinBox->value();
+  if(measureComboBox->currentIndex()==ExportDialog::cm) {
+    width  /= 2.54;
+    height /= 2.54;
+  };
+
+  int res_dpi = resSpinBox->value();
+  if(resRatioComboBox->currentIndex()==ExportDialog::cm_px)
+    res_dpi /= 2.54; 
+
+  // export to file
+  Exporter* exporter;
+  if(outputFormatComboBox->currentIndex() == ExportDialog::pdf)
+    exporter = ExportPDF::getExportPDF();
+  else
+    exporter = ExportPNG::getExportPNG();
+
+  exporter->save(filename, mExp, width, height, res_dpi);
 }
-*/
