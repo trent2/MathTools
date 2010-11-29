@@ -2,6 +2,8 @@
 #define _EXPORT_DIALOG_HPP_
 #include "ui_exportdialog.h"
 
+class Exportable;
+
 class ExportDialog : public QDialog, public Ui::ExportDialog {
 
 Q_OBJECT
@@ -11,10 +13,11 @@ public:
   enum Measure {cm, in};
   enum ResolutionRatio {in_px, cm_px};
 
-  ExportDialog(double width, double height, QWidget* parent, OutputFormat format = pdf,
-	       Measure m = cm, ResolutionRatio rr = in_px);
+  ExportDialog(QWidget* parent, Exportable *expo, double width, double height,
+	       OutputFormat format = pdf, Measure m = cm, ResolutionRatio rr = in_px);
 
 private:
+  Exportable *mExp;
   double mWidth, mHeight;
   Measure mMeas;
   ResolutionRatio mResType;
@@ -26,7 +29,7 @@ private:
   static const int minMMSize;
   static const int maxMMSize;
 
-  // private slots:
-  //  void on_exportDialog_accept();
+private slots:
+  void on_buttonBox_accepted();
 };
 #endif
