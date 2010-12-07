@@ -1,5 +1,6 @@
 #include <QtGui/QMainWindow>
 
+#include "HypTestTab.hpp"
 #include "BinomialDistTab.hpp"
 #include "PlotTab.hpp"
 #include "MathTools.hpp"
@@ -15,4 +16,8 @@ void MathTools::on_plotAction_triggered() {
 
 void MathTools::on_binomialDistAction_triggered() {
   mainTabWidget->setCurrentIndex(mainTabWidget->addTab(new BinomialDistTab(mainTabWidget), "Binomial Distribution"));
+}
+
+void MathTools::on_testingAction_triggered() {
+  mainTabWidget->setCurrentIndex(mainTabWidget->addTab(new HypTestTab(mainTabWidget), "Testing"));
 }

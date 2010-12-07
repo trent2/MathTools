@@ -13,6 +13,7 @@ set(MathTools_SRCS
   Exporter.cpp
   BinomialDistTab.cpp
   BinomialDistPlotter.cpp
+  HypTestTab.cpp
 )
 
 set(MathTools_MOC_HDRS
@@ -22,6 +23,7 @@ set(MathTools_MOC_HDRS
   FunctionPlotter.hpp
   ExportDialog.hpp
   BinomialDistTab.hpp
+  HypTestTab.hpp
 )
 
 set(MathTools_UIS
@@ -29,6 +31,7 @@ set(MathTools_UIS
   plottab.ui
   exportdialog.ui
   binomialdist.ui
+  hyptest.ui
 )
 
 add_subdirectory(qtcolorcombobox)

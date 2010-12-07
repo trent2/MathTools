@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>800</width>
-    <height>600</height>
+    <height>509</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -55,10 +55,17 @@
      <string>&amp;Analysis</string>
     </property>
     <addaction name="plotAction"/>
+   </widget>
+   <widget class="QMenu" name="menuStochastics">
+    <property name="title">
+     <string>&amp;Stochastics</string>
+    </property>
     <addaction name="binomialDistAction"/>
+    <addaction name="testingAction"/>
    </widget>
    <addaction name="menu_Datei"/>
    <addaction name="menu_Analysis"/>
+   <addaction name="menuStochastics"/>
    <addaction name="menu_About"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
@@ -78,6 +85,11 @@
   <action name="binomialDistAction">
    <property name="text">
     <string>&amp;Binomial Distribution</string>
+   </property>
+  </action>
+  <action name="testingAction">
+   <property name="text">
+    <string>&amp;Testing</string>
    </property>
   </action>
  </widget>

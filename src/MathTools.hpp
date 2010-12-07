@@ -16,6 +16,7 @@ public:
 private slots:  // slots are auto-connected
   void on_plotAction_triggered();
   void on_binomialDistAction_triggered();
+  void on_testingAction_triggered();
 };
 
 #endif // __MATHTOOLS_HPP_
