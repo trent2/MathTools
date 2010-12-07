@@ -51,6 +51,9 @@ void BinomialDistTab::on_binPlotter_newYMax(double ymax) {
   ymaxDSpinBox->setValue(ymax);
   binPlotter->update();
 }
+void BinomialDistTab::on_xmaxDSpinBox_valueChanged(double xmax) {
+  binPlotter->setXMax(xmax);
+}
 
 void BinomialDistTab::on_yminDSpinBox_valueChanged(double ymin) {
   double ymax = ymaxDSpinBox->value();

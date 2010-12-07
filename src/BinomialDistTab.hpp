@@ -13,6 +13,7 @@ private slots:  // slots are auto-connected
   void on_nSpinBox_valueChanged(int);
   void on_pDSpinBox_valueChanged(double);
 
+  void on_xmaxDSpinBox_valueChanged(double);
   void on_yminDSpinBox_valueChanged(double);
   void on_ymaxDSpinBox_valueChanged(double);
 
