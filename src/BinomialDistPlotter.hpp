@@ -3,11 +3,6 @@
 
 #include "Plotter.hpp"
 
-// classes defined elsewhere
-class MathFunction;
-class QPainter;
-class QPaintDevice;
-
 class BinomialDistPlotter : public Plotter {
 public:
   BinomialDistPlotter(QWidget *parent=0);
@@ -17,9 +12,9 @@ public:
   void setKMin(int kmin) { mKmin = kmin; }
   void setKMax(int kmax) { mKmax = kmax; }
   void setPlotPdf(bool b) { mPdf = b; }
-  void paintIt(QPaintDevice*, QPainter::RenderHints=0) const;
+  virtual void paintIt(QPaintDevice*, QPainter::RenderHints=0) const;
 
-private:
+protected:
   int mN;
   double mP;
   int mKmin, mKmax;
