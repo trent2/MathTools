@@ -1,0 +1,9 @@
+MathTools  (working title)
+---------
+
+Tool to demonstrate different aspects of high school
+mathematics such as plotting of functions, binomial distribution,
+linear algebra computations, testing.
+
+Used language: C++
+GUI with Qt 4.
