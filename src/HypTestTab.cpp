@@ -11,6 +11,7 @@ HypTestTab::HypTestTab(QWidget* parent) : QWidget(parent) {
 			 Plotter::AutoTicksX | Plotter::AutoTicksY);
   hypPlotter->setN(nSpinBox->value());
   hypPlotter->setP(pDSpinBox->value());
+  hypPlotter->setTestResult(xSpinBox->value());
   hypPlotter->update();
   updateV();
 }
@@ -23,7 +24,9 @@ void HypTestTab::on_nSpinBox_valueChanged(int n) {
   updateV();
 }
 
-void HypTestTab::on_xSpinBox_valueChanged(int) {
+void HypTestTab::on_xSpinBox_valueChanged(int tr) {
+  hypPlotter->setTestResult(tr);
+  updateV();
 }
 
 void HypTestTab::on_pDSpinBox_valueChanged(double p) {
@@ -86,7 +89,7 @@ void HypTestTab::updateV() {
   double alpha = alphaDSpinBox->value();
   if(bothRButton->isChecked())
     alpha /= 2;
-  std::ostringstream numstream;
+  std::ostringstream numstream, pstream;
 
   if(leftRButton->isChecked() || bothRButton->isChecked()) {  // test from left
     k=m/2;
@@ -99,7 +102,13 @@ void HypTestTab::updateV() {
       k=std::ceil((h+l)/2.0);
     }
     k1 = h;
+    hypPlotter->setKLow(k1);
+
+    // create border probabilities string
+    pstream << "<p>P(X&le;" << k1 << ") &asymp; " << gsl_cdf_binomial_P(k1, pDSpinBox->value(), nSpinBox->value()) << "</p>\n"
+	    << "<p>P(X&le;" << k1+1 << ") &asymp; " << gsl_cdf_binomial_P(k1+1, pDSpinBox->value(), nSpinBox->value()) << "</p>\n";
   }
+
   l = 0, h = nSpinBox->value();
   if(rightRButton->isChecked() || bothRButton->isChecked()) {  // test from right
     k=3*m/2;
@@ -111,8 +120,14 @@ void HypTestTab::updateV() {
       k=std::floor((h+l)/2.0);
     }
     k2 = h;
+    hypPlotter->setKHigh(k2);
+
+    // create border probabilities string
+    pstream << "<p>P(X&ge;" << k2 << ") &asymp; " << 1-gsl_cdf_binomial_P(k2-1, pDSpinBox->value(), nSpinBox->value()) << "</p>\n"
+	    << "<p>P(X&ge;" << k2-1 << ") &asymp; " << 1-gsl_cdf_binomial_P(k2-2, pDSpinBox->value(), nSpinBox->value()) << "</p>";
   }
 
+  // create region of rejection string
   if(leftRButton->isChecked()) {
     numstream << "{" << 0 << ", ..., " << k1 << "}";
     rejected = xSpinBox->value() <= k1;
@@ -125,24 +140,31 @@ void HypTestTab::updateV() {
     numstream << "{" << 0 << ", ..., " << k1 << ", " << k2 << ", ..., " << nSpinBox->value() << "}";
     rejected = xSpinBox->value() <= k1 || xSpinBox->value() >= k2;
   }
-  
+
+  // output strings
+  pTextBrowser->setText(pstream.str().c_str());
   vLineEdit->setText(numstream.str().c_str());
   if(rejected)
     acceptTextBrowser->setHtml("<span style=\"color: red; font-size: 20pt; \"<b>H<sub>0</sub> rejected</b></span>");
   else
     acceptTextBrowser->setHtml("<span style=\"color: green; font-size: 20pt; \"<b>H<sub>0</sub> accepted</b></span>");
+
+  hypPlotter->update();
 }
 
 
 void HypTestTab::on_leftRButton_toggled(bool) {
+  hypPlotter->setTest(HypTestPlotter::left);
   updateV();
 }
 
 void HypTestTab::on_rightRButton_toggled(bool) {
+  hypPlotter->setTest(HypTestPlotter::right);
   updateV();
 }
 
 void HypTestTab::on_bothRButton_toggled(bool) {
+  hypPlotter->setTest(HypTestPlotter::both);
   updateV();
 }
 

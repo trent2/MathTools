@@ -14,6 +14,7 @@ set(MathTools_SRCS
   BinomialDistTab.cpp
   BinomialDistPlotter.cpp
   HypTestTab.cpp
+  HypTestPlotter.cpp
 )
 
 set(MathTools_MOC_HDRS

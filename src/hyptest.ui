@@ -7,35 +7,13 @@
     <x>0</x>
     <y>0</y>
     <width>904</width>
-    <height>652</height>
+    <height>556</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
   <layout class="QGridLayout" name="gridLayout_2">
-   <item row="0" column="1" rowspan="4">
-    <widget class="BinomialDistPlotter" name="hypPlotter">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="minimumSize">
-      <size>
-       <width>281</width>
-       <height>311</height>
-      </size>
-     </property>
-     <property name="frameShape">
-      <enum>QFrame::StyledPanel</enum>
-     </property>
-     <property name="frameShadow">
-      <enum>QFrame::Raised</enum>
-     </property>
-    </widget>
-   </item>
    <item row="2" column="0">
     <widget class="QGroupBox" name="miscGBox">
      <property name="title">
@@ -167,7 +145,7 @@
    <item row="1" column="0">
     <widget class="QGroupBox" name="parametersGBox">
      <property name="sizePolicy">
-      <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+      <sizepolicy hsizetype="Maximum" vsizetype="Expanding">
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
@@ -175,13 +153,7 @@
      <property name="minimumSize">
       <size>
        <width>321</width>
-       <height>200</height>
-      </size>
-     </property>
-     <property name="maximumSize">
-      <size>
-       <width>321</width>
-       <height>16777215</height>
+       <height>363</height>
       </size>
      </property>
      <property name="title">
@@ -205,6 +177,18 @@
         <layout class="QHBoxLayout" name="horizontalLayout">
          <item>
           <widget class="QRadioButton" name="leftRButton">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="MinimumExpanding">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>21</height>
+            </size>
+           </property>
            <property name="text">
             <string>left</string>
            </property>
@@ -215,6 +199,18 @@
          </item>
          <item>
           <widget class="QRadioButton" name="rightRButton">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="MinimumExpanding">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>21</height>
+            </size>
+           </property>
            <property name="text">
             <string>right</string>
            </property>
@@ -222,6 +218,18 @@
          </item>
          <item>
           <widget class="QRadioButton" name="bothRButton">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="MinimumExpanding">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>21</height>
+            </size>
+           </property>
            <property name="text">
             <string>both</string>
            </property>
@@ -267,6 +275,12 @@
             <verstretch>0</verstretch>
            </sizepolicy>
           </property>
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>25</height>
+           </size>
+          </property>
           <property name="minimum">
            <number>1</number>
           </property>
@@ -288,6 +302,12 @@
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>25</height>
+           </size>
           </property>
           <property name="decimals">
            <number>4</number>
@@ -376,6 +396,12 @@ p, li { white-space: pre-wrap; }
             <verstretch>0</verstretch>
            </sizepolicy>
           </property>
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>25</height>
+           </size>
+          </property>
           <property name="decimals">
            <number>3</number>
           </property>
@@ -398,11 +424,17 @@ p, li { white-space: pre-wrap; }
             <verstretch>0</verstretch>
            </sizepolicy>
           </property>
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>25</height>
+           </size>
+          </property>
           <property name="maximum">
            <number>100000</number>
           </property>
           <property name="singleStep">
-           <number>100</number>
+           <number>1</number>
           </property>
           <property name="value">
            <number>200</number>
@@ -412,15 +444,19 @@ p, li { white-space: pre-wrap; }
        </layout>
       </item>
       <item>
+       <widget class="QTextBrowser" name="pTextBrowser">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>80</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+      <item>
        <layout class="QHBoxLayout" name="horizontalLayout_2">
         <item>
          <widget class="QLabel" name="vLabel">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
           <property name="font">
            <font>
             <pointsize>15</pointsize>
@@ -442,12 +478,6 @@ p, li { white-space: pre-wrap; }
         </item>
         <item>
          <widget class="QLineEdit" name="vLineEdit">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
           <property name="readOnly">
            <bool>true</bool>
           </property>
@@ -457,12 +487,6 @@ p, li { white-space: pre-wrap; }
       </item>
       <item>
        <widget class="QTextBrowser" name="acceptTextBrowser">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Expanding" vsizetype="Maximum">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
         <property name="maximumSize">
          <size>
           <width>16777215</width>
@@ -471,29 +495,38 @@ p, li { white-space: pre-wrap; }
         </property>
        </widget>
       </item>
-      <item>
-       <spacer name="verticalSpacer">
-        <property name="orientation">
-         <enum>Qt::Vertical</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>261</width>
-          <height>215</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
      </layout>
+    </widget>
+   </item>
+   <item row="0" column="1" rowspan="4">
+    <widget class="HypTestPlotter" name="hypPlotter">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>281</width>
+       <height>311</height>
+      </size>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::StyledPanel</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Raised</enum>
+     </property>
     </widget>
    </item>
   </layout>
  </widget>
  <customwidgets>
   <customwidget>
-   <class>BinomialDistPlotter</class>
+   <class>HypTestPlotter</class>
    <extends>QFrame</extends>
-   <header>BinomialDistPlotter.hpp</header>
+   <header>HypTestPlotter.hpp</header>
    <container>1</container>
    <slots>
     <signal>newXMin(double)</signal>
