@@ -16,8 +16,12 @@ BinomialDistPlotter::BinomialDistPlotter(QWidget *parent) : Plotter(parent), mN(
 
 void BinomialDistPlotter::paintIt(QPaintDevice *d, QPainter::RenderHints hints) const {
   QPainter p(d);
+  paintIt(p, hints);
+}
 
+void BinomialDistPlotter::paintIt(QPainter &p, const QPainter::RenderHints &hints) const {
   p.setRenderHints(hints);
+  QPaintDevice *d = p.device();
 
   PlotHelp::cs_params param = computeCSParameters(d);
 
@@ -54,5 +58,4 @@ void BinomialDistPlotter::paintIt(QPaintDevice *d, QPainter::RenderHints hints) 
 		 xw, yp);
     }
   }
-  p.end();
 }

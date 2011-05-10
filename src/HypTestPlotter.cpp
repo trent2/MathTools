@@ -66,7 +66,10 @@ void HypTestPlotter::paintIt(QPaintDevice *d, QPainter::RenderHints hints) const
   p.drawLine(resultPoint, resultPoint+QPoint(0,20));
   p.drawText(QRect(resultPoint + QPoint(-resSize.width()/2,30), resSize), Qt::AlignCenter, "X");
 
-  BinomialDistPlotter::paintIt(d, hints);
+  linePen.setColor(Qt::black);
+  p.setPen(linePen);
+
+  BinomialDistPlotter::paintIt(p, hints);
 }
 
 void HypTestPlotter::blotBar(int k, QPainter &p, const PlotHelp::cs_params &param) const {

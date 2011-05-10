@@ -14,6 +14,7 @@ public:
   void setPlotPdf(bool b) { mPdf = b; }
   virtual void paintIt(QPaintDevice*, QPainter::RenderHints=0) const;
 
+
 protected:
   int mN;
   double mP;
@@ -21,5 +22,7 @@ protected:
 
   // plot probability distribution function
   bool mPdf;
+
+  void paintIt(QPainter &p, const QPainter::RenderHints&) const;
 };
 #endif
