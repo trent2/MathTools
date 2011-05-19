@@ -45,7 +45,7 @@ private slots:  // slots are auto-connected
   void on_plotter_newXTicks(double);
   void on_plotter_newYTicks(double);
 
-  // export to pdf
+  // export
   void on_exportPushButton_clicked();
 };
 #endif
