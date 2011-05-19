@@ -4,8 +4,6 @@
 #include "PlotterHelper.hpp"
 #include "Calc.hpp"
 
-const QString HypTestPlotter::regOfRejectionText = "H0's region of rejection";
-
 HypTestPlotter::HypTestPlotter(QWidget *parent, TestType tt) : BinomialDistPlotter(parent), testtype(tt),
 							       testresult(0) { }
 
@@ -19,7 +17,7 @@ void HypTestPlotter::paintIt(QPaintDevice *d, QPainter::RenderHints hints) const
   PlotHelp::cs_params param = computeCSParameters(d);
   plotGrid(p);
 
-  regTextSize = p.fontMetrics().size(Qt::TextSingleLine, regOfRejectionText);
+  regTextSize = p.fontMetrics().size(Qt::TextSingleLine, tr("H0's region of rejection"));
   resSize = p.fontMetrics().size(Qt::TextSingleLine, "X");
 
   const QPen ppen = p.pen();
@@ -40,7 +38,7 @@ void HypTestPlotter::paintIt(QPaintDevice *d, QPainter::RenderHints hints) const
 		      param.winheight+calc::roundi(yMin()*param.ystep)+30),
 	       regionEnd);
     p.drawText(QRect(QPoint(regionEnd.x()-regTextSize.width(), regionEnd.y()+10), regTextSize),
-	       Qt::AlignRight, regOfRejectionText);
+	       Qt::AlignRight, tr("H0's region of rejection"));
     p.setPen(ppen);
   }
   
@@ -55,7 +53,7 @@ void HypTestPlotter::paintIt(QPaintDevice *d, QPainter::RenderHints hints) const
     p.drawLine(QPoint(calc::roundi((mN-xMin())*param.xstep)+calc::roundi(param.xstep/2), param.winheight+calc::roundi(yMin()*param.ystep)+30),
 	       regionEnd);
     regionEnd += QPoint(0,10);
-    p.drawText(QRect(regionEnd, regTextSize), Qt::AlignLeft, regOfRejectionText);
+    p.drawText(QRect(regionEnd, regTextSize), Qt::AlignLeft, tr("H0's region of rejection"));
   }
 
   linePen.setColor(Qt::red);

@@ -110,22 +110,26 @@ double Plotter::yMax() const {
 
 void Plotter::setCompAutoXTicks(bool b) {
   int *o = &impl->options_bv;
-  *o =  (b ? *o | Plotter::AutoTicksX : *o & ~Plotter::AutoTicksX);
+  *o &= ~Plotter::AutoTicksX;
+  *o += b*Plotter::AutoTicksX;
 }
 
 void Plotter::setCompAutoYTicks(bool b) {
   int *o = &impl->options_bv;
-  *o =  (b ? *o | Plotter::AutoTicksY : *o & ~Plotter::AutoTicksY);
+  *o &= ~Plotter::AutoTicksY;
+  *o += b*Plotter::AutoTicksY;
 }
 
 void Plotter::setDrawGridX(bool b) {
   int *o = &impl->options_bv;
-  *o =  (b ? *o | Plotter::DrawGridX : *o & ~Plotter::DrawGridX);
+  *o &= ~Plotter::DrawGridX;
+  *o += b*Plotter::DrawGridX;
 }
 
 void Plotter::setDrawGridY(bool b) {
   int *o = &impl->options_bv;
-  *o =  (b ? *o | Plotter::DrawGridY : *o & ~Plotter::DrawGridY);
+  *o &= ~Plotter::DrawGridY;
+  *o += b*Plotter::DrawGridY;
 }
 
 void Plotter::setOptions(int opt) {

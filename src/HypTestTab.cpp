@@ -145,9 +145,9 @@ void HypTestTab::updateV() {
   pTextBrowser->setText(pstream.str().c_str());
   vLineEdit->setText(numstream.str().c_str());
   if(rejected)
-    acceptTextBrowser->setHtml("<span style=\"color: red; font-size: 20pt; \"<b>H<sub>0</sub> rejected</b></span>");
+    acceptTextBrowser->setHtml(tr("<span style=\"color: red; font-size: 20pt; \"<b>H<sub>0</sub> rejected</b></span>"));
   else
-    acceptTextBrowser->setHtml("<span style=\"color: green; font-size: 20pt; \"<b>H<sub>0</sub> accepted</b></span>");
+    acceptTextBrowser->setHtml(tr("<span style=\"color: green; font-size: 20pt; \"<b>H<sub>0</sub> accepted</b></span>"));
 
   hypPlotter->update();
 }

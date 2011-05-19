@@ -4,6 +4,9 @@
 #include "BinomialDistPlotter.hpp"
 
 class HypTestPlotter : public BinomialDistPlotter {
+
+Q_OBJECT
+
 public:
   enum TestType { left=1, right=2, both=4 };
 

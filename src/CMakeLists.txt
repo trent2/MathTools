@@ -25,6 +25,7 @@ set(MathTools_MOC_HDRS
   ExportDialog.hpp
   BinomialDistTab.hpp
   HypTestTab.hpp
+  HypTestPlotter.hpp
 )
 
 set(MathTools_UIS

@@ -11,7 +11,6 @@
 class QPaintEvent;
 class QMouseEvent;
 class QWheelEvent;
-class QFrame;
 class QPaintDevice;
 
 // Pimpl idiom
