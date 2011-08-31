@@ -30,6 +30,7 @@
     </item>
    </layout>
   </widget>
+  <widget class="QStatusBar" name="statusbar"/>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
     <rect>
@@ -49,6 +50,7 @@
     <property name="title">
      <string>A&amp;bout</string>
     </property>
+    <addaction name="aboutAction"/>
    </widget>
    <widget class="QMenu" name="menu_Analysis">
     <property name="title">
@@ -68,7 +70,6 @@
    <addaction name="menuStochastics"/>
    <addaction name="menu_About"/>
   </widget>
-  <widget class="QStatusBar" name="statusbar"/>
   <action name="exitAction">
    <property name="text">
     <string>&amp;Exit</string>
@@ -90,6 +91,11 @@
   <action name="testingAction">
    <property name="text">
     <string>&amp;Testing</string>
+   </property>
+  </action>
+  <action name="aboutAction">
+   <property name="text">
+    <string>About</string>
    </property>
   </action>
  </widget>

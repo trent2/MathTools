@@ -26,6 +26,7 @@ set(MathTools_MOC_HDRS
   BinomialDistTab.hpp
   HypTestTab.hpp
   HypTestPlotter.hpp
+  About.hpp
 )
 
 set(MathTools_UIS

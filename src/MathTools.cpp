@@ -4,6 +4,7 @@
 #include "BinomialDistTab.hpp"
 #include "PlotTab.hpp"
 #include "MathTools.hpp"
+#include "About.hpp"
 
 MathTools::MathTools(QWidget *parent, Qt::WFlags f) : QMainWindow(parent, f)
 {
@@ -20,4 +21,8 @@ void MathTools::on_binomialDistAction_triggered() {
 
 void MathTools::on_testingAction_triggered() {
   mainTabWidget->setCurrentIndex(mainTabWidget->addTab(new HypTestTab(mainTabWidget), "Testing"));
+}
+
+void MathTools::on_aboutAction_triggered() {
+  AboutDialog(this).exec();
 }
