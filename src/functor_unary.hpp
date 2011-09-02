@@ -1,10 +1,11 @@
 #ifndef __FUNCTOR_UNARY_HPP__
 #define __FUNCTOR_UNARY_HPP__
 namespace functor {
+  template <typename T>
   class unary_function {
   public:
     unary_function() : __stepsize(0) {}
-    virtual double& operator()(const double &d) = 0;
+    virtual T& operator()(const T &d) = 0;
     virtual ~unary_function() {}
 
     // set the stepsize for infinitesemal operations, e.g.
@@ -12,10 +13,13 @@ namespace functor {
     virtual void setStepsize(const double &ss) { __stepsize = ss; };
 
   protected:
-    double __r;
+    T __r;
     double __stepsize;
   };
 
-  typedef unary_function un_fun;
+  template <typename T>
+  struct un_fun {
+    typedef unary_function<T> type;
+  };
 }
 #endif

@@ -8,9 +8,10 @@
 
 #include "functor_unary.hpp"
 
+// the argument type of the function (e.g. double or complex)
+template <typename T>
 class MathFunction {
 public:
-
   MathFunction(const std::string &s="", const QColor &col = Qt::red);
 
   ~MathFunction();
@@ -22,7 +23,7 @@ public:
 
   bool parseOk() const { return mParseOk; }
 
-  double operator()(const double &) const;
+  T operator()(const T &) const;
   void setUStepsize(const double &d);
 
 private:
@@ -34,9 +35,11 @@ private:
 
   std::string mOrig_func_string;
   GiNaC::ex mFunc_term;
-  functor::un_fun *mNum_Func;
+  typename functor::un_fun<T>::type *mNum_Func;
   QColor mColor;
   bool mParseOk;
 };
+
+#include "MathFunction.cpp"
 
 #endif

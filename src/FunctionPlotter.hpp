@@ -2,9 +2,10 @@
 #define _FUNCTION_PLOTTER_HPP_
 
 #include "Plotter.hpp"
+#include "MathFunction.hpp"
 
 // classes defined elsewhere
-class MathFunction;
+inline template class MathFunction<double>;
 class QPainter;
 class QPaintDevice;
 
@@ -20,7 +21,8 @@ public:
   FunctionPlotter(QWidget *parent=0);
   ~FunctionPlotter();
 
-  MathFunction& getFunction(int index);
+  
+  MathFunction<double>& getFunction(int index);
   void paintIt(QPaintDevice*, QPainter::RenderHints=0) const;
 
 public slots:

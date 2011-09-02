@@ -17,7 +17,7 @@ private:
   friend class FunctionPlotter;
   Plotter *src;
 
-  std::vector<MathFunction> mfunc;
+  std::vector<MathFunction<double> > mfunc;
 
   // flag to determine whether to draw vertical lines
   bool verticalCorrection;
@@ -48,7 +48,7 @@ FunctionPlotter::~FunctionPlotter() {
   delete impl_fp;
 }
 
-MathFunction& FunctionPlotter::getFunction(int index) {
+MathFunction<double>& FunctionPlotter::getFunction(int index) {
   return impl_fp->mfunc[index];
 }
 
