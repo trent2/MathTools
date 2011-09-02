@@ -61,9 +61,9 @@ protected:  // all these methods are overwritten
   /*** Plot the coordinate grid on a QPainter p.
    **/
   void plotGrid(QPainter &p) const;
+  void paintEvent(QPaintEvent *);
 
 private:
-  void paintEvent(QPaintEvent *);
 
 Q_SIGNALS:
   void newXMin(double);

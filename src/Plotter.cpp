@@ -15,7 +15,6 @@ private:
   friend class Plotter;
   Plotter *src;
 
-
   static const int tickPixelDistForAuto;
   static const int descAutoPixelDist;
   static const double zoomFactor;
@@ -136,7 +135,6 @@ void Plotter::setOptions(int opt) {
   impl->options_bv = opt;
 }
 
-
 void Plotter::paintEvent(QPaintEvent *e) {
   // do non-const operations
   impl->computeAutoTicks();
@@ -230,7 +228,6 @@ void Plotter_Implementation::plotGrid(QPainter &p, qreal res_factor) const {
 
 /** This methods computes
 
-    - xticks, yticks (delta for tick marks in real cs) if autoticks is enabled
     - xstep, ystep (number of device units per cs unit)
     - descDistX, descDistY (distance between numbers drawn on the display)
  */
