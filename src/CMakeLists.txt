@@ -35,6 +35,7 @@ set(MathTools_UIS
   exportdialog.ui
   binomialdist.ui
   hyptest.ui
+  about.ui
 )
 
 add_subdirectory(qtcolorcombobox)
