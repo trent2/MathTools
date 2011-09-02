@@ -1,0 +1,3 @@
+#define MathTools_VERSION_MAJOR @MathTools_VERSION_MAJOR@
+#define MathTools_VERSION_MINOR @MathTools_VERSION_MINOR@
+#define MathTools_VERSION_MINOR_MINOR @MathTools_VERSION_MINOR_MINOR@
