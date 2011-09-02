@@ -40,6 +40,7 @@ set(MathTools_UIS
   binomialdist.ui
   hyptest.ui
   complextab.ui
+  about.ui
 )
 
 add_subdirectory(qtcolorcombobox)
