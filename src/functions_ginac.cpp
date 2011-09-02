@@ -4,6 +4,8 @@ using namespace GiNaC;
 
 GiNaC::symbol symb_x("x");
 GiNaC::symbol symb_e("e");
+GiNaC::symbol symb_z("z");
+GiNaC::symbol symb_i("i");
 
 static ex sqrt_eval(const ex &x) {
   return sqrt(x);

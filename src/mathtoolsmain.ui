@@ -57,6 +57,7 @@
      <string>&amp;Analysis</string>
     </property>
     <addaction name="plotAction"/>
+    <addaction name="complexPlotAction"/>
    </widget>
    <widget class="QMenu" name="menuStochastics">
     <property name="title">
@@ -96,6 +97,11 @@
   <action name="aboutAction">
    <property name="text">
     <string>About</string>
+   </property>
+  </action>
+  <action name="complexPlotAction">
+   <property name="text">
+    <string>&amp;Complex Plots</string>
    </property>
   </action>
  </widget>

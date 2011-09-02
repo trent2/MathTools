@@ -7,3 +7,12 @@ linear algebra computations, testing.
 
 Used language: C++
 GUI with Qt 4.
+Libraries needed to build and run: gsl (http://www.gnu.org/s/gsl), qt4 (http://qt.nokia.com/products),
+                                   ginac (http://www.ginac.de), cln (http://www.ginac.de/CLN)
+
+Build with cmake.
+
+All code is licensed under the GPLv3, see LICENSE.
+
+Robert Spillner <Robert.Spillner@gmx.de>
+August 2011

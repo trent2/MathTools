@@ -47,6 +47,8 @@ void MathFunction<T>::createReader() {
   if(!reader) {
     GiNaC::symtab *table = new GiNaC::symtab;
     (*table)["x"] = symb_x;
+    (*table)["z"] = symb_z;
+    (*table)["i"] = symb_i;
     (*table)["e"] = symb_e;
     reader = new GiNaC::parser(*table);
     reader->strict = true;
