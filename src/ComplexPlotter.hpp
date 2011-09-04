@@ -20,7 +20,11 @@
 #ifndef _COMPLEX_PLOTTER_HPP_
 #define _COMPLEX_PLOTTER_HPP_
 
+#define PAINT_THREAD_COUNT 4
+
 #include <complex>
+#include <QtCore/QThread>
+#include <QtCore/QMutex>
 
 #include "Plotter.hpp"
 #include "MathFunction.hpp"
@@ -29,6 +33,10 @@ class QImage;
 class QLabel;
 
 class ComplexPlotter : public Plotter {
+
+  Q_OBJECT
+
+  class ImagePainterThread;
 public:
   ComplexPlotter(QWidget *parent=0);
   ~ComplexPlotter();
@@ -40,11 +48,12 @@ public:
   void setInfinityThreshold(int it) { mInfinityThreshold = it; }
 
   MathFunction<std::complex<double> >& getFunction() const { return *mF; }
+  ComplexPlotter::ImagePainterThread* getImagePainterThread(int i) { return paintThreads[i]; }
 
-  void doARepaint();
+  void doRepaint();
 
   // overwrites abstract declaration from Exportable
-  void paintIt(QPaintDevice*, QPainter::RenderHints=0) const;
+  void paintIt(QPaintDevice*, QPainter::RenderHints=0) const { }
 
 protected:
   void paintEvent(QPaintEvent *);
@@ -56,9 +65,29 @@ private:
   QImage *mImage;
   QLabel *mLabel;
   qreal mUnitCircleColor[3];
-  MathFunction<std::complex<double> > *mF;
   bool mRepaintEnabled;
+  MathFunction<std::complex<double> > *mF;
+  int finishCounter;
+  QMutex *mMutex;
 
-  QRgb getBlendedColor(const QColor &col, double l, double lambda, double mu, double nu) const;
+  friend class ComplexPlotter::ImagePainterThread;
+
+  class ImagePainterThread : public QThread {
+  public:
+    ImagePainterThread(ComplexPlotter *p, int threadNumber, QMutex *mutex) :
+      mPlotter(p), mMux(mutex), mThreadNumber(threadNumber) { }
+    void run();
+  private:
+    ComplexPlotter *mPlotter;
+    QMutex *mMux;
+    int mThreadNumber;
+    inline void setPixel(int x, int y, QRgb c) { mPlotter->mImage->setPixel(x, y, c); }
+  } *paintThreads[PAINT_THREAD_COUNT];
+
+  void resizeImage();
+  void setEnabledRepaintButton(bool b);
+
+public slots:
+  void checkFinished();
 };
 #endif

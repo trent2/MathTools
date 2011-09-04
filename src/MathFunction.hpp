@@ -23,6 +23,7 @@
 #include <string>
 
 #include <QtGui/QColor>
+#include <QtCore/QMutex>
 #include <ginac/ginac.h>
 
 #include "functor_unary.hpp"
@@ -32,6 +33,9 @@ template <typename T>
 class MathFunction {
 public:
   MathFunction(const std::string &s="", const QColor &col = Qt::red);
+
+  // copy constructor
+  MathFunction(const MathFunction &);
 
   ~MathFunction();
 
@@ -57,6 +61,7 @@ private:
   typename functor::un_fun<T>::type *mNum_Func;
   QColor mColor;
   bool mParseOk;
+  static QMutex mMutex;
 };
 
 #include "MathFunction.cpp"

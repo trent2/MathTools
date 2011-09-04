@@ -27,6 +27,7 @@ Q_OBJECT
 
 public:
   ComplexTab(QWidget* parent=0);
+  QPushButton* getRepaintPushButton() const { return repaintPushButton; }
 
 private slots:  // slots are auto-connected
   void on_repaintPushButton_clicked();

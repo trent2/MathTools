@@ -18,26 +18,30 @@
 /*  file: --- ComplexPlotter.cpp --- */
 
 #include <complex>
+#include <iostream>
 #include <QtGui/QImage>
 #include <QtGui/QLabel>
 #include <QtGui/QVBoxLayout>
 
 #include "ComplexPlotter.hpp"
+#include "ComplexTab.hpp"
 #include "Calc.hpp"
 
 ComplexPlotter::ComplexPlotter(QWidget *parent) : Plotter(parent), mRayThickness(1),
 						  mRayOpacity(1), mCircleThickness(1), mCircleOpacity(1),
-						  mInfinityThreshold(1000), mImage(0), mRepaintEnabled(false)
+						  mInfinityThreshold(1000), mImage(0), mRepaintEnabled(false),
+						  mF(new MathFunction<std::complex<double> >),
+						  finishCounter(0), mMutex(new QMutex())
 {
-  mF = new MathFunction<std::complex<double> >;
+  for(int i=0; i<PAINT_THREAD_COUNT; ++i)
+    paintThreads[i] = new ComplexPlotter::ImagePainterThread(this, i, mMutex);
+
   mLabel = new QLabel(this);
   mLabel->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
   QVBoxLayout *l = new QVBoxLayout(this);
   l->setContentsMargins(0,0,0,0);
   l->addWidget(mLabel);
-
   QColor(Qt::darkRed).getRgbF(&mUnitCircleColor[0], &mUnitCircleColor[1], &mUnitCircleColor[2]);
-
   setYMin(-2);
   setYMax(2);
   setXMin(-2);
@@ -47,82 +51,122 @@ ComplexPlotter::ComplexPlotter(QWidget *parent) : Plotter(parent), mRayThickness
 ComplexPlotter::~ComplexPlotter() {
   delete mF;
   delete mImage;
+  delete mMutex;
   // mLabel and the box-layout created in the constructor is automatically destroyed my Qt
 }
 
-void ComplexPlotter::doARepaint() {
+void ComplexPlotter::resizeImage() {
+  if(mImage && mImage->size() != mLabel->size()) {
+    delete mImage;
+    mImage = new QImage(mLabel->size(), QImage::Format_RGB888);
+  } else if(!mImage)
+    mImage = new QImage(mLabel->size(), QImage::Format_RGB888);
+}
+
+void ComplexPlotter::setEnabledRepaintButton(bool b) {
+  ComplexTab* ct = static_cast<ComplexTab*>(parentWidget());
+  ct->getRepaintPushButton()->setEnabled(b);
+}
+
+void ComplexPlotter::doRepaint() {
+  setEnabledRepaintButton(false);
   mRepaintEnabled = true;
-  update();
+
+  resizeImage();
+  // call through to the superclass handler
+  for(int i=PAINT_THREAD_COUNT-1; i>=0; i--)
+    paintThreads[i]->start();
 }
 
 void ComplexPlotter::paintEvent(QPaintEvent *e) {
   if(mRepaintEnabled) {
-    if(mImage != 0 && mImage->size() != mLabel->size()) {
-      delete mImage;
-      mImage = new QImage(mLabel->size(), QImage::Format_RGB888);
-    } else if(mImage == 0)
-      mImage = new QImage(mLabel->size(), QImage::Format_RGB888);
-
-    // call through to the superclass handler
+    resizeImage();
     Plotter::paintEvent(e);
+    mLabel->setPixmap(QPixmap::fromImage(*mImage));
+    setEnabledRepaintButton(true);
     mRepaintEnabled = false;
   }
 }
 
-void ComplexPlotter::paintIt(QPaintDevice *d, QPainter::RenderHints hints) const {
-  PlotHelp::cs_params param = computeCSParameters(mLabel);
+// void ComplexPlotter::paintIt(QPaintDevice *d, QPainter::RenderHints hints) const {
+// }
+
+void ComplexPlotter::ImagePainterThread::run() {
+  PlotHelp::cs_params param = mPlotter->computeCSParameters(mPlotter->mLabel);
 
   std::complex<double> f, z;
 
-  double projection_radius = .1;
+  double steoreographic_projection_ball_radius = .1;
   double ray_nums = 12;
   double log_base = 2;
+  double xmin = mPlotter->xMin(),
+    ymin = mPlotter->yMin(),
+    infT = mPlotter->mInfinityThreshold,
+    rayO  = mPlotter->mRayOpacity,
+    cirO  = mPlotter->mCircleOpacity,
+    rayT  = mPlotter->mRayThickness,
+    cirT  = mPlotter->mCircleThickness;
 
   double h, s, v;  // hue, sat, val
   double m;        // modulus (Betrag)
   double lambda, mu, nu, dummy;
-  QColor pixelColor;
+  MathFunction<std::complex<double> > nf(*mPlotter->mF);
 
-  if(mF->parseOk()) {
+  QColor pixelColor;
+  // integer division
+  int ystart = mThreadNumber*(param.winheight+1)/PAINT_THREAD_COUNT,
+    yend = (mThreadNumber+1)*(param.winheight+1)/PAINT_THREAD_COUNT-1;
+
+  mMux->lock();
+  std::cerr << "Thread " << mThreadNumber << " painting from " << ystart << " to " << yend << std::endl;
+  mMux->unlock();
+
+  if(nf.parseOk()) {
     for(int x=0; x <= param.winwidth; ++x)
-      for(int y=0; y <= param.winheight; ++y) {
-	z.real(xMin() + x/param.xstep);
-	z.imag(yMin() + (param.winheight-y)/param.ystep);
-	f = (*mF)(z);
+      for(int y=ystart; y <= yend; ++y) {
+	z.real(xmin + x/param.xstep);
+	z.imag(ymin + (param.winheight-y)/param.ystep);
+	f = nf(z);
 
 	m = std::sqrt(f.real()*f.real()+f.imag()*f.imag());
 	// log here is really ln, but that's unimportant
 	double l = log(m)/log(log_base);
 
 	h = std::atan2(f.imag(), f.real());
-	s = (m>mInfinityThreshold) ? 0 : 1;
+	s = (m>infT) ? 0 : 1;
 
-	v = M_2_PI*std::atan(m/(2.0*projection_radius));
+	v = M_2_PI*std::atan(m/(2.0*steoreographic_projection_ball_radius));
 
-
-	// lambda = exp(-8000*(1-mRayThickness)*pow(remainder(h,2*M_PI/ray_nums),2));
-	lambda = exp(-8000/mRayThickness*pow(remainder(h,2*M_PI/ray_nums),2));
+	lambda = exp(-8000/rayT*pow(remainder(h,2*M_PI/ray_nums),2));
 	h = fmod(h/(2*M_PI)+1,1);
 	pixelColor.setHsvF(h, s, v);
 
 	mu = fmod(modf(l, &dummy)+1, 1);
-	// nu = exp(-10000*(1-mCircleThickness)*pow(remainder(modf(log(m)/log(log_base), &dummy), 0.5),2));
-	nu = exp(-10000/mCircleThickness*pow(remainder(modf(l, &dummy), 0.5),2));
+	nu = exp(-10000/cirT*pow(remainder(modf(l, &dummy), 0.5),2));
 
 	qreal r[3];
 	pixelColor.getRgbF(&r[0], &r[1], &r[2]);
 
 	for(int i=0; i<3; ++i) {
-	  r[i] *= (1-0.25*(1-mu*mCircleOpacity));
-	  r[i] = r[i]*(1-lambda*mRayOpacity) + lambda*mRayOpacity;
-	  if(l>-.25 && l<.25)
-	    r[i] = r[i]*(1-nu*mCircleOpacity) + nu*mCircleOpacity*mUnitCircleColor[i];
+	  r[i] *= (1-0.25*(1-mu*cirO));
+	  r[i] = r[i]*(1-lambda*rayO) + lambda*rayO;
+	  if(l>-.25 && l<.25) {
+	    r[i] = r[i]*(1-nu*cirO) + nu*cirO*mPlotter->mUnitCircleColor[i];
+	  }
 	  else
-	    r[i] *= (1-nu*mCircleOpacity);
+	    r[i] *= (1-nu*cirO);
 	}
-
-	mImage->setPixel(x, y, qRgb(r[0]*255, r[1]*255, r[2]*255));
+	mMux->lock();	
+	setPixel(x, y, qRgb(r[0]*255, r[1]*255, r[2]*255));
+	mMux->unlock();
     }
-    mLabel->setPixmap(QPixmap::fromImage(*mImage));
+  }
+  //  mMux->unlock();
+}
+
+void ComplexPlotter::checkFinished() {
+  if(++finishCounter == PAINT_THREAD_COUNT) {
+    finishCounter = 0;
+    update();
   }
 }

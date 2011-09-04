@@ -31,6 +31,7 @@ set(MathTools_MOC_HDRS
   HypTestPlotter.hpp
   About.hpp
   ComplexTab.hpp
+  ComplexPlotter.hpp
 )
 
 set(MathTools_UIS

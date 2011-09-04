@@ -17,17 +17,21 @@
 
 /*  file: --- ComplexTab.cpp --- */
 
+#include <QtCore/QObject>
 #include "ComplexTab.hpp"
 
 ComplexTab::ComplexTab(QWidget* parent) : QWidget(parent) {
   setupUi(this);
+
+  for(int i=0; i<PAINT_THREAD_COUNT; ++i)
+    connect(plotter->getImagePainterThread(i), SIGNAL(finished()), plotter, SLOT(checkFinished()));
 }
 
 /* PlotTab slots */
 
 void ComplexTab::on_repaintPushButton_clicked() {
   plotter->getFunction().setFunction(fLineEdit->text().toStdString());
-  plotter->doARepaint();
+  plotter->doRepaint();
 }
 
 void ComplexTab::on_plotter_newXMin(double xmin) {

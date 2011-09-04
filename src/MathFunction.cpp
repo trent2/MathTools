@@ -35,6 +35,12 @@ MathFunction<T>::MathFunction(const std::string &s, const QColor &col) : mOrig_f
 }
 
 template <typename T>
+MathFunction<T>::MathFunction(const MathFunction &mf) : mOrig_func_string(mf.mOrig_func_string),
+							mNum_Func(0), mColor(mf.mColor), mParseOk(false) {
+  parse();
+}
+
+template <typename T>
 MathFunction<T>::~MathFunction() {
   delete mNum_Func;
 }
@@ -59,10 +65,15 @@ void MathFunction<T>::setUStepsize(const double &d) {
 // a GiNaC parser
 template <typename T>
 GiNaC::parser *MathFunction<T>::reader;
+
+template <typename T>
+QMutex MathFunction<T>::mMutex;
+
 extern GiNaC::symbol symb_x, symb_e, symb_z, symb_i;
 
 template <typename T>
 void MathFunction<T>::createReader() {
+  mMutex.lock();
   if(!reader) {
     GiNaC::symtab *table = new GiNaC::symtab;
     (*table)["x"] = symb_x;
@@ -72,9 +83,12 @@ void MathFunction<T>::createReader() {
     reader = new GiNaC::parser(*table);
     reader->strict = true;
   }
+  mMutex.unlock();
 }
+
 template <typename T>
 void MathFunction<T>::parse() {
+  mMutex.lock();
   mParseOk = true;
   try {
     mFunc_term = (*reader)(mOrig_func_string);
@@ -82,4 +96,5 @@ void MathFunction<T>::parse() {
   } catch (std::exception& err) {
     mParseOk = false;
   }
+  mMutex.unlock();
 }

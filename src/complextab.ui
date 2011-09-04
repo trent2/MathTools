@@ -34,7 +34,6 @@
      <property name="frameShadow">
       <enum>QFrame::Raised</enum>
      </property>
-     <zorder>complexFunctionGBox</zorder>
     </widget>
    </item>
    <item row="0" column="0">
@@ -61,9 +60,6 @@
       <string>Complex Function Color Plot</string>
      </property>
      <layout class="QFormLayout" name="formLayout_3">
-      <property name="fieldGrowthPolicy">
-       <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
-      </property>
       <item row="0" column="0">
        <widget class="QLabel" name="fLabel">
         <property name="text">
