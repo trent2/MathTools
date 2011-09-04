@@ -17,14 +17,17 @@
 
 /*  file: --- ComplexTab.cpp --- */
 
+#include <QDebug>
 #include <QtCore/QObject>
 #include "ComplexTab.hpp"
 
 ComplexTab::ComplexTab(QWidget* parent) : QWidget(parent) {
   setupUi(this);
 
-  for(int i=0; i<PAINT_THREAD_COUNT; ++i)
-    connect(plotter->getImagePainterThread(i), SIGNAL(finished()), plotter, SLOT(checkFinished()));
+  mThreads = nThreadsSpinBox->value();
+
+  for(int i=0; i<16; ++i)
+    connect(plotter->getImageRendererThread(i), SIGNAL(rendered()), plotter, SLOT(checkFinished()));
 }
 
 /* PlotTab slots */
@@ -113,6 +116,11 @@ void ComplexTab::on_circleOpacityDSpinBox_valueChanged(double d) {
 
 void ComplexTab::on_infThresholdSpinBox_valueChanged(int i) {
   plotter->setInfinityThreshold(i);
+}
+
+void ComplexTab::on_nThreadsSpinBox_valueChanged(int threadsNew) {
+  plotter->setNumThreads(threadsNew);
+
 }
 
 void ComplexTab::on_standardPushButton_clicked() {

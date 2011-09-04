@@ -28,6 +28,10 @@ Q_OBJECT
 public:
   ComplexTab(QWidget* parent=0);
   QPushButton* getRepaintPushButton() const { return repaintPushButton; }
+  QSpinBox* getThreadsSpinBox() const { return nThreadsSpinBox; }
+
+private:
+  int mThreads;
 
 private slots:  // slots are auto-connected
   void on_repaintPushButton_clicked();
@@ -48,5 +52,6 @@ private slots:  // slots are auto-connected
   void on_circleThicknessDSpinBox_valueChanged(double);
   void on_circleOpacityDSpinBox_valueChanged(double);
   void on_infThresholdSpinBox_valueChanged(int);
+  void on_nThreadsSpinBox_valueChanged(int);
 };
 #endif

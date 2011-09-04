@@ -20,36 +20,55 @@
 #ifndef _COMPLEX_PLOTTER_HPP_
 #define _COMPLEX_PLOTTER_HPP_
 
-#define PAINT_THREAD_COUNT 4
-
 #include <complex>
 #include <QtCore/QThread>
-#include <QtCore/QMutex>
+#include <QtCore/QWaitCondition>
 
 #include "Plotter.hpp"
 #include "MathFunction.hpp"
+
+#define MAX_THREADS 16
 
 class QImage;
 class QLabel;
 class QElapsedTimer;
 
+class ImageRendererThread;
+typedef MathFunction<std::complex<double> > MFC_t;
+
 class ComplexPlotter : public Plotter {
 
   Q_OBJECT
 
-  class ImagePainterThread;
+
 public:
+
+  struct Parameter {
+    MFC_t *mF;
+    double mRayThickness, mRayOpacity, mCircleThickness, mCircleOpacity;
+    int mInfinityThreshold, mNThreads;
+    QImage *mImage;
+    qreal mUnitCircleColor[3];
+
+    Parameter() :
+      mF(0), mRayThickness(1), mRayOpacity(1), mCircleThickness(1), mCircleOpacity(1),
+      mInfinityThreshold(1000), mNThreads(10), mImage(0) {
+      QColor(Qt::darkRed).getRgbF(&mUnitCircleColor[0], &mUnitCircleColor[1], &mUnitCircleColor[2]);
+    }
+  };
+
   ComplexPlotter(QWidget *parent=0);
   ~ComplexPlotter();
 
-  void setRayThickness(double rt) { mRayThickness = rt; }
-  void setRayOpacity(double ro) { mRayOpacity = ro; }
-  void setCircleThickness(double ct) { mCircleThickness = ct; }
-  void setCircleOpacity(double co) { mCircleOpacity = co; }
-  void setInfinityThreshold(int it) { mInfinityThreshold = it; }
+  void setRayThickness(double rt) { mP.mRayThickness = rt; }
+  void setRayOpacity(double ro) { mP.mRayOpacity = ro; }
+  void setCircleThickness(double ct) { mP.mCircleThickness = ct; }
+  void setCircleOpacity(double co) { mP.mCircleOpacity = co; }
+  void setInfinityThreshold(int it) { mP.mInfinityThreshold = it; }
+  void setNumThreads(int th);
 
-  MathFunction<std::complex<double> >& getFunction() const { return *mF; }
-  ComplexPlotter::ImagePainterThread* getImagePainterThread(int i) { return paintThreads[i]; }
+  MFC_t& getFunction() const { return *mP.mF; }
+  ImageRendererThread* getImageRendererThread(int) const;
 
   void doRepaint();
 
@@ -60,36 +79,45 @@ protected:
   void paintEvent(QPaintEvent *);
 
 private:
-  double mRayThickness, mRayOpacity, mCircleThickness, mCircleOpacity;
-  int mInfinityThreshold;
-
-  QImage *mImage;
+  ComplexPlotter::Parameter mP;
   QLabel *mLabel;
-  qreal mUnitCircleColor[3];
   bool mRepaintEnabled;
-  MathFunction<std::complex<double> > *mF;
   int finishCounter;
-  QMutex *mMutex;
   QElapsedTimer *mStopwatch;
 
-  friend class ComplexPlotter::ImagePainterThread;
-
-  class ImagePainterThread : public QThread {
-  public:
-    ImagePainterThread(ComplexPlotter *p, int threadNumber, QMutex *mutex) :
-      mPlotter(p), mMux(mutex), mThreadNumber(threadNumber) { }
-    void run();
-  private:
-    ComplexPlotter *mPlotter;
-    QMutex *mMux;
-    int mThreadNumber;
-    inline void setPixel(int x, int y, QRgb c) { mPlotter->mImage->setPixel(x, y, c); }
-  } *paintThreads[PAINT_THREAD_COUNT];
-
   void resizeImage();
-  void setEnabledRepaintButton(bool b);
+  void setEnabledThreadStuff(bool b);
 
+  ImageRendererThread **paintThreads;
 public slots:
   void checkFinished();
 };
+
+class ImageRendererThread : public QThread {
+
+  Q_OBJECT
+
+public:
+  ImageRendererThread(int threadNumber) : QThread(), mThreadNumber(threadNumber), mMutex(), mFinish(false) { }
+  void render(const ComplexPlotter::Parameter &p, const PlotHelp::cs_params &cs_p, int xmin, int ymin);
+  ~ImageRendererThread();
+protected:
+  void run();
+private:
+  ImageRendererThread() { }  // disallow standard constructor
+
+  int mThreadNumber;
+  QMutex mMutex;
+  QWaitCondition condition;
+  bool mFinish;
+
+  // initialized in render
+  ComplexPlotter::Parameter mP;
+  PlotHelp::cs_params mCSP;
+  int mXmin, mYmin;
+
+signals:
+  void rendered();
+};
+
 #endif
