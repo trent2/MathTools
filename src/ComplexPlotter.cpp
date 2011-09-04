@@ -19,9 +19,11 @@
 
 #include <complex>
 #include <iostream>
+#include <QDebug>
 #include <QtGui/QImage>
 #include <QtGui/QLabel>
 #include <QtGui/QVBoxLayout>
+#include <QtCore/QElapsedTimer>
 
 #include "ComplexPlotter.hpp"
 #include "ComplexTab.hpp"
@@ -31,7 +33,7 @@ ComplexPlotter::ComplexPlotter(QWidget *parent) : Plotter(parent), mRayThickness
 						  mRayOpacity(1), mCircleThickness(1), mCircleOpacity(1),
 						  mInfinityThreshold(1000), mImage(0), mRepaintEnabled(false),
 						  mF(new MathFunction<std::complex<double> >),
-						  finishCounter(0), mMutex(new QMutex())
+						  finishCounter(0), mMutex(new QMutex), mStopwatch(new QElapsedTimer)
 {
   for(int i=0; i<PAINT_THREAD_COUNT; ++i)
     paintThreads[i] = new ComplexPlotter::ImagePainterThread(this, i, mMutex);
@@ -74,12 +76,15 @@ void ComplexPlotter::doRepaint() {
 
   resizeImage();
   // call through to the superclass handler
+  mStopwatch->start();
   for(int i=PAINT_THREAD_COUNT-1; i>=0; i--)
     paintThreads[i]->start();
 }
 
 void ComplexPlotter::paintEvent(QPaintEvent *e) {
   if(mRepaintEnabled) {
+    qDebug() << "The image computation took " << mStopwatch->elapsed() << " milliseconds";
+    mStopwatch->invalidate();
     resizeImage();
     Plotter::paintEvent(e);
     mLabel->setPixmap(QPixmap::fromImage(*mImage));
@@ -110,16 +115,15 @@ void ComplexPlotter::ImagePainterThread::run() {
   double h, s, v;  // hue, sat, val
   double m;        // modulus (Betrag)
   double lambda, mu, nu, dummy;
+
+  // make a copy of the function object so we won't need thread locking
+  // to slow us down
   MathFunction<std::complex<double> > nf(*mPlotter->mF);
 
   QColor pixelColor;
   // integer division
   int ystart = mThreadNumber*(param.winheight+1)/PAINT_THREAD_COUNT,
     yend = (mThreadNumber+1)*(param.winheight+1)/PAINT_THREAD_COUNT-1;
-
-  mMux->lock();
-  std::cerr << "Thread " << mThreadNumber << " painting from " << ystart << " to " << yend << std::endl;
-  mMux->unlock();
 
   if(nf.parseOk()) {
     for(int x=0; x <= param.winwidth; ++x)
@@ -156,12 +160,11 @@ void ComplexPlotter::ImagePainterThread::run() {
 	  else
 	    r[i] *= (1-nu*cirO);
 	}
-	mMux->lock();	
+	// mMux->lock();	
 	setPixel(x, y, qRgb(r[0]*255, r[1]*255, r[2]*255));
-	mMux->unlock();
+	// mMux->unlock();
     }
   }
-  //  mMux->unlock();
 }
 
 void ComplexPlotter::checkFinished() {

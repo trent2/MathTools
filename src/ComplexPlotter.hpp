@@ -31,6 +31,7 @@
 
 class QImage;
 class QLabel;
+class QElapsedTimer;
 
 class ComplexPlotter : public Plotter {
 
@@ -69,6 +70,7 @@ private:
   MathFunction<std::complex<double> > *mF;
   int finishCounter;
   QMutex *mMutex;
+  QElapsedTimer *mStopwatch;
 
   friend class ComplexPlotter::ImagePainterThread;
 
