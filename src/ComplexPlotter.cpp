@@ -24,6 +24,7 @@
 #include <QtGui/QLabel>
 #include <QtGui/QVBoxLayout>
 #include <QtCore/QElapsedTimer>
+#include <QtCore/QMutex>
 
 #include "ComplexPlotter.hpp"
 #include "ComplexTab.hpp"
@@ -31,13 +32,13 @@
 
 ComplexPlotter::ComplexPlotter(QWidget *parent) : Plotter(parent), mP(ComplexPlotter::Parameter()),
 						  mRepaintEnabled(false),
-						  finishCounter(0), mStopwatch(new QElapsedTimer)
+						  finishCounter(0), mStopwatch(new QElapsedTimer), mMutex()
 {
   mP.mF = new MFC_t;
   paintThreads = new ImageRendererThread*[MAX_THREADS];  // there's a maximum of MAX_THREADS threads allowed
 
   for(int i=0; i<MAX_THREADS; ++i)
-    paintThreads[i] = new ImageRendererThread(i);
+    paintThreads[i] = new ImageRendererThread(i, mMutex);
 
   mLabel = new QLabel(this);
   mLabel->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
@@ -187,10 +188,12 @@ void ImageRendererThread::run() {
 
     if(nf.parseOk()) {
       for(int y=ystart; y <= yend; ++y) {
+	mGMutex.lock();
+	sl = reinterpret_cast<QRgb*>(mImage->scanLine(y));
+	mGMutex.unlock();
+	for(int x=0; x <= param.winwidth; ++x) {
 	if(mFinish)
 	  return;
-	sl = reinterpret_cast<QRgb*>(mImage->scanLine(y));
-	for(int x=0; x <= param.winwidth; ++x) {
 	  z.real(xmin + x/param.xstep);
 	  z.imag(ymin + (param.winheight-y)/param.ystep);
 	  f = nf(z);

@@ -84,6 +84,7 @@ private:
   bool mRepaintEnabled;
   int finishCounter;
   QElapsedTimer *mStopwatch;
+  QMutex mMutex;
 
   void resizeImage();
   void setEnabledThreadStuff(bool b);
@@ -98,16 +99,17 @@ class ImageRendererThread : public QThread {
   Q_OBJECT
 
 public:
-  ImageRendererThread(int threadNumber) : QThread(), mThreadNumber(threadNumber), mMutex(), mFinish(false) { }
+  ImageRendererThread(int threadNumber, QMutex &m) : QThread(), mThreadNumber(threadNumber), mGMutex(m), mFinish(false) { }
   void render(const ComplexPlotter::Parameter &p, const PlotHelp::cs_params &cs_p, int xmin, int ymin);
   ~ImageRendererThread();
 protected:
   void run();
 private:
-  ImageRendererThread() { }  // disallow standard constructor
+  // ImageRendererThread() { }  // disallow standard constructor
 
   int mThreadNumber;
   QMutex mMutex;
+  QMutex &mGMutex;
   QWaitCondition condition;
   bool mFinish;
 
