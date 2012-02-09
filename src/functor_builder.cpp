@@ -36,9 +36,12 @@ namespace std {
   inline std::complex<double> atan(const std::complex<double> &c) {
     return log((1.0+M_I*c)/(1.0-M_I*c))/(2.0*M_I);
   }
-
   inline std::complex<double> abs(const std::complex<double> &c) {
-    return std::abs(c);
+    // reference double std::abs(const std::complex<double> &) by "abs_double"
+    // to force the compiler using the correct method since
+    // using "std::abs(c)" in the return statement calls this function recursively.
+    double(*abs_double)(const std::complex<double> &) = std::abs;
+    return abs_double(c);
   }
 }
 
