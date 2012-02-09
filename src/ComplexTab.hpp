@@ -53,5 +53,6 @@ private slots:  // slots are auto-connected
   void on_circleOpacityDSpinBox_valueChanged(double);
   void on_infThresholdSpinBox_valueChanged(int);
   void on_nThreadsSpinBox_valueChanged(int);
+  void on_iterateSpinBox_valueChanged(int);
 };
 #endif

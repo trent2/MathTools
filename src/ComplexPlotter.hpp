@@ -46,13 +46,13 @@ public:
   struct Parameter {
     MFC_t *mF;
     double mRayThickness, mRayOpacity, mCircleThickness, mCircleOpacity;
-    int mInfinityThreshold, mNThreads;
+    int mInfinityThreshold, mNThreads, mIterations;
     QImage *mImage;
     qreal mUnitCircleColor[3];
 
     Parameter() :
       mF(0), mRayThickness(1), mRayOpacity(1), mCircleThickness(1), mCircleOpacity(1),
-      mInfinityThreshold(1000), mNThreads(10), mImage(0) {
+      mInfinityThreshold(1000), mNThreads(10), mIterations(1), mImage(0) {
       QColor(Qt::darkRed).getRgbF(&mUnitCircleColor[0], &mUnitCircleColor[1], &mUnitCircleColor[2]);
     }
   };
@@ -65,7 +65,8 @@ public:
   void setCircleThickness(double ct) { mP.mCircleThickness = ct; }
   void setCircleOpacity(double co) { mP.mCircleOpacity = co; }
   void setInfinityThreshold(int it) { mP.mInfinityThreshold = it; }
-  void setNumThreads(int th);
+  void setNumThreads(int);
+  void setIterations(int);
 
   MFC_t& getFunction() const { return *mP.mF; }
   ImageRendererThread* getImageRendererThread(int) const;

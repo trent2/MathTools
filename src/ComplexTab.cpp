@@ -123,6 +123,10 @@ void ComplexTab::on_nThreadsSpinBox_valueChanged(int threadsNew) {
 
 }
 
+void ComplexTab::on_iterateSpinBox_valueChanged(int i) {
+  plotter->setIterations(i);
+}
+
 void ComplexTab::on_standardPushButton_clicked() {
   plotter->setXMin(-2);
   plotter->setXMax(2);

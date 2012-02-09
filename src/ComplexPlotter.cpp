@@ -70,6 +70,10 @@ void ComplexPlotter::setNumThreads(int th) {
   mP.mNThreads = th;
 }
 
+void ComplexPlotter::setIterations(int i) {
+  mP.mIterations = i;
+}
+
 ImageRendererThread* ComplexPlotter::getImageRendererThread(int i) const {
   if(i<MAX_THREADS)
     return paintThreads[i];
@@ -174,6 +178,7 @@ void ImageRendererThread::run() {
       rayT  = mP.mRayThickness,
       cirT  = mP.mCircleThickness;
 
+    int iterations = mP.mIterations;
     // make a copy of the function object so we won't need thread locking
     // to slow us down
     MFC_t nf(*mP.mF);
@@ -196,7 +201,9 @@ void ImageRendererThread::run() {
 	  return;
 	  z.real(xmin + x/param.xstep);
 	  z.imag(ymin + (param.winheight-y)/param.ystep);
-	  f = nf(z);
+	  f = z;
+	  for(int i=0; i<iterations; ++i)
+	    f = nf(f);
 
 	  m = std::sqrt(f.real()*f.real()+f.imag()*f.imag());
 	  // log here is really ln, but that's unimportant
@@ -239,7 +246,9 @@ void ImageRendererThread::run() {
 	   * Unfortunately, locking the resource with a mutex results in a drastic
 	   * increase in computation time so we refrain from it at this point.
 	   */
+	  // mMutex.lock();
 	  sl[x] = qRgb(r[0]*255, r[1]*255, r[2]*255);
+	  // mMutex.unlock();
 	}
       }
     }
