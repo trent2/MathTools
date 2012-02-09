@@ -139,7 +139,7 @@ ImageRendererThread::~ImageRendererThread() {
 }
 
 void ImageRendererThread::render(const ComplexPlotter::Parameter &p,
-				 const PlotHelp::cs_params &csp, int xmin, int ymin) {
+				 const PlotHelp::cs_params &csp, double xmin, double ymin) {
   QMutexLocker locker(&mMutex);  // lock the whole method
 
   mP = p;

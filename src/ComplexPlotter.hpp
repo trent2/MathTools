@@ -101,7 +101,7 @@ class ImageRendererThread : public QThread {
 
 public:
   ImageRendererThread(int threadNumber, QMutex &m) : QThread(), mThreadNumber(threadNumber), mGMutex(m), mFinish(false) { }
-  void render(const ComplexPlotter::Parameter &p, const PlotHelp::cs_params &cs_p, int xmin, int ymin);
+  void render(const ComplexPlotter::Parameter &p, const PlotHelp::cs_params &cs_p, double xmin, double ymin);
   ~ImageRendererThread();
 protected:
   void run();
@@ -117,7 +117,7 @@ private:
   // initialized in render
   ComplexPlotter::Parameter mP;
   PlotHelp::cs_params mCSP;
-  int mXmin, mYmin;
+  double mXmin, mYmin;
 
 signals:
   void rendered();
