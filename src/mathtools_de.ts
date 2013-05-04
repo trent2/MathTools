@@ -8,11 +8,11 @@
         <translation>Über</translation>
     </message>
     <message>
-        <source>MathTools V 0.2, (C) 2010, 2011</source>
+        <source>Author: R. Spillner</source>
         <translation></translation>
     </message>
     <message>
-        <source>Author: R. Spillner</source>
+        <source>MathTools V 0.2.2, (C) 2010-2013</source>
         <translation></translation>
     </message>
 </context>
@@ -99,10 +99,6 @@ Distribution</source>
 <context>
     <name>ComplexPlotForm</name>
     <message>
-        <source>Form</source>
-        <translation></translation>
-    </message>
-    <message>
         <source>Complex Function Color Plot</source>
         <translation>Farbplot für komplexe Funktionen</translation>
     </message>
@@ -144,15 +140,15 @@ Distribution</source>
     </message>
     <message>
         <source>ray opacity</source>
-        <translation>Durchsichtigkeit Strahlen</translation>
+        <translation>Strichstärke Strahlen</translation>
     </message>
     <message>
         <source>circle thickness</source>
-        <translation>Dicke der Kreise</translation>
+        <translation>Strichdicke Kreise</translation>
     </message>
     <message>
         <source>circle opacity</source>
-        <translation>Durchsichtigkeit Kreise</translation>
+        <translation>Strichstärke Kreislinie</translation>
     </message>
     <message>
         <source>infinity threshold</source>
@@ -160,15 +156,19 @@ Distribution</source>
     </message>
     <message>
         <source># of threads</source>
-        <translation>Threadanzahl</translation>
+        <translation>Zahl Rechenthreads</translation>
     </message>
     <message>
         <source>iterate function</source>
-        <translation>Iteriere Funktion</translation>
+        <translation>Iterierungstiefe</translation>
     </message>
     <message>
         <source>ray thickness</source>
-        <translation>Dicke der Strahlen</translation>
+        <translation>Strichdicke Strahlen</translation>
+    </message>
+    <message>
+        <source>Complex Plot</source>
+        <translation>Komplexe Funktion</translation>
     </message>
 </context>
 <context>
@@ -215,17 +215,6 @@ Distribution</source>
     </message>
     <message>
         <source>px / cm</source>
-        <translation></translation>
-    </message>
-</context>
-<context>
-    <name>Form</name>
-    <message>
-        <source>Form</source>
-        <translation></translation>
-    </message>
-    <message>
-        <source>TextLabel</source>
         <translation></translation>
     </message>
 </context>
@@ -352,10 +341,29 @@ p, li { white-space: pre-wrap; }
     </message>
 </context>
 <context>
+    <name>MathTools</name>
+    <message>
+        <source>Plot</source>
+        <translation>Funktionsplotter</translation>
+    </message>
+    <message>
+        <source>Complex Plot</source>
+        <translation>Komplexe Funktion</translation>
+    </message>
+    <message>
+        <source>Binomial Distribution</source>
+        <translation>Binomialverteilung</translation>
+    </message>
+    <message>
+        <source>Testing</source>
+        <translation>Hypothesentest</translation>
+    </message>
+</context>
+<context>
     <name>MathToolsMainWindow</name>
     <message>
         <source>MathTools</source>
-        <translation>Mathe-Tools</translation>
+        <translation>Mathematik-Tools</translation>
     </message>
     <message>
         <source>&amp;File</source>
@@ -387,7 +395,8 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Ctrl+Q</source>
-        <translation>Strg+Q</translation>
+        <translatorcomment>Beenden im Hauptprogramm</translatorcomment>
+        <translation>Ctrl+Q</translation>
     </message>
     <message>
         <source>&amp;Plot</source>
@@ -495,13 +504,6 @@ p, li { white-space: pre-wrap; }
     <message>
         <source>auto</source>
         <translation></translation>
-    </message>
-</context>
-<context>
-    <name>QFrame</name>
-    <message>
-        <source>H0&apos;s region of rejection</source>
-        <translation type="obsolete">Verwerfungsbereich für H0</translation>
     </message>
 </context>
 <context>

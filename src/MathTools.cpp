@@ -32,19 +32,19 @@ MathTools::MathTools(QWidget *parent, Qt::WFlags f) : QMainWindow(parent, f)
 }
 
 void MathTools::on_plotAction_triggered() {
-  mainTabWidget->setCurrentIndex(mainTabWidget->addTab(new PlotTab(mainTabWidget), "Plot"));
+  mainTabWidget->setCurrentIndex(mainTabWidget->addTab(new PlotTab(mainTabWidget), tr("Plot")));
 }
 
 void MathTools::on_complexPlotAction_triggered() {
-  mainTabWidget->setCurrentIndex(mainTabWidget->addTab(new ComplexTab(mainTabWidget), "Complex Plot"));
+  mainTabWidget->setCurrentIndex(mainTabWidget->addTab(new ComplexTab(mainTabWidget), tr("Complex Plot")));
 }
 
 void MathTools::on_binomialDistAction_triggered() {
-  mainTabWidget->setCurrentIndex(mainTabWidget->addTab(new BinomialDistTab(mainTabWidget), "Binomial Distribution"));
+  mainTabWidget->setCurrentIndex(mainTabWidget->addTab(new BinomialDistTab(mainTabWidget), tr("Binomial Distribution")));
 }
 
 void MathTools::on_testingAction_triggered() {
-  mainTabWidget->setCurrentIndex(mainTabWidget->addTab(new HypTestTab(mainTabWidget), "Testing"));
+  mainTabWidget->setCurrentIndex(mainTabWidget->addTab(new HypTestTab(mainTabWidget), tr("Testing")));
 }
 
 void MathTools::on_aboutAction_triggered() {

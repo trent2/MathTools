@@ -20,19 +20,28 @@
 #include <QtGui/QApplication>
 #include <QtCore/QTranslator>
 #include <QtCore/QTextCodec>
+#include <QLibraryInfo>
 
 #include "MathTools.hpp"
 
 int main(int argc, char** argv)
 {
     QApplication app(argc, argv);
-    MathTools foo;
 
-    QTranslator translator;
-    translator.load("mathtools_" + QLocale::system().name());
-    app.installTranslator(&translator);
+    // Install Qt translator
+    QTranslator qtTranslator;
+    qtTranslator.load("qt_" + QLocale::system().name(),
+		      QLibraryInfo::location(QLibraryInfo::TranslationsPath));
+    app.installTranslator(&qtTranslator);
+
+    // Install MathTools translator
+    QTranslator mtTranslator;
+    mtTranslator.load("mathtools_" + QLocale::system().name());
+    app.installTranslator(&mtTranslator);
+
     QTextCodec::setCodecForTr(QTextCodec::codecForName("utf8"));
 
+    MathTools foo;
     foo.show();
     return app.exec();
 }
