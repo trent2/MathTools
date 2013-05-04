@@ -20,7 +20,7 @@
    <item>
     <widget class="QLabel" name="label_2">
      <property name="text">
-      <string>MathTools V 0.2, (C) 2010, 2011</string>
+      <string>MathTools V 0.2.2, (C) 2010-2013</string>
      </property>
     </widget>
    </item>
