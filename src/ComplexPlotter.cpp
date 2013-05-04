@@ -157,7 +157,7 @@ void ImageRendererThread::render(const ComplexPlotter::Parameter &p,
 }
 
 void ImageRendererThread::run() {
-  std::complex<double> f, z;
+  std::complex<double> z;
   double steoreographic_projection_ball_radius = .1;
   double ray_nums = 12;
   double log_base = 2;
@@ -197,19 +197,18 @@ void ImageRendererThread::run() {
 	sl = reinterpret_cast<QRgb*>(mImage->scanLine(y));
 	mGMutex.unlock();
 	for(int x=0; x <= param.winwidth; ++x) {
-	if(mFinish)
-	  return;
+	  if(mFinish)
+	    return;
 	  z.real(xmin + x/param.xstep);
 	  z.imag(ymin + (param.winheight-y)/param.ystep);
-	  f = z;
 	  for(int i=0; i<iterations; ++i)
-	    f = nf(f);
+	    z = nf(z);
 
-	  m = std::sqrt(f.real()*f.real()+f.imag()*f.imag());
+	  m = std::sqrt(z.real()*z.real()+z.imag()*z.imag());
 	  // log here is really ln, but that's unimportant
 	  double l = log(m)/log(log_base);
 
-	  h = std::atan2(f.imag(), f.real());
+	  h = std::atan2(z.imag(), z.real());
 	  s = (m>infT) ? 0 : 1;
 
 	  v = M_2_PI*std::atan(m/(2.0*steoreographic_projection_ball_radius));
@@ -228,7 +227,7 @@ void ImageRendererThread::run() {
 	    r[i] *= (1-0.25*(1-mu*cirO));
 	    r[i] = r[i]*(1-lambda*rayO) + lambda*rayO;
 	    if(l>-.25 && l<.25) {
-	      r[i] = r[i]*(1-nu*cirO) + nu*cirO*mP.mUnitCircleColor[i];
+	       r[i] = r[i]*(1-nu*cirO) + nu*cirO*mP.mUnitCircleColor[i];
 	    }
 	    else
 	      r[i] *= (1-nu*cirO);
